@@ -5,34 +5,58 @@ import pygame
 from pygame.locals import *
 
 # all functions + classes
+# pound and kg
 def lb_to_kg(val):
 	return val / 2.204622622
 
 def kg_to_lb(val):
 	return val * 2.204622622
 
+# pound and stone
 def lb_to_st(val):
 	return val * 0.071429
 
 def st_to_lb(val):
 	return val / 0.071429
 
+# kg and stone
 def kg_to_st(val):
 	return lb_to_st(kg_to_lb(val))
 
 def st_to_kg(val):
 	return lb_to_kg(st_to_lb(val))
 
-class Main_Units:
+# inch and centimetre
+def inch_to_cm(val):
+	return val * 2.54
+
+def cm_to_inch(val):
+	return val / 2.54
+
+# metre and yard
+def m_to_yd(val):
+	return val / 0.9144
+
+def yd_to_m(val):
+	return val * 0.9144
+
+# mile and kilometre
+def mile_to_km(val):
+	return val * 1.609344
+
+def km_to_mile(val):
+	return val / 1.609344
+
+class main_units:
 	# val - value to convert, unit_1 - convert from, unit_2 - convert to
 	def __init__(self, val, unit_1, unit_2):
 		self.val = val
 		self.unit_1 = unit_1
 		self.unit_2 = unit_2
 
-class Mass(Main_Units):
-
+class mass(main_units):
 	def convert(self):
+
 		if self.unit_1 == 'lb':
 			if self.unit_2 == 'kg':
 				return lb_to_kg(self.val)
@@ -54,12 +78,39 @@ class Mass(Main_Units):
 			elif self.unit_2 == 'kg':
 				return st_to_kg(self.val)
 
+class length(main_units):
+	def convert(self):
 
-my_val = 34
-my_1 = 'st'
-my_2 = 'kg'
-x = Mass(my_val, my_1, my_2)
+		if self.unit_1 == 'inch' and self.unit_2 == 'cm':
+			return inch_to_cm(self.val)
+
+		elif self.unit_1 == 'cm' and self.unit_2 == 'inch':
+			return cm_to_inch(self.val)
+
+		elif self.unit_1 == 'm' and self.unit_2 == 'yd':
+			return m_to_yd(self.val)
+
+		elif self.unit_1 == 'yd' and self.unit_2 == 'm':
+			return yd_to_m(self.val)
+
+		elif self.unit_1 == 'mile' and self.unit_2 == 'km':
+			return mile_to_km(self.val)
+
+		elif self.unit_1 == 'km' and self.unit_2 == 'mile':
+			return km_to_mile(self.val)
+
+
+my_val_mass = 34
+my_1_mass = 'st'
+my_2_mass = 'kg'
+x = mass(my_val_mass, my_1_mass, my_2_mass)
 print(x.convert())
+
+my_val_length = 50
+my_1_length = 'km'
+my_2_length = 'mile'
+y = length(my_val_length, my_1_length, my_2_length)
+print(y.convert())
 
 # # all colours
 # black = (0, 0, 0)
