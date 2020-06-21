@@ -5,57 +5,58 @@ import pygame
 from pygame.locals import *
 
 # all functions + classes
-class Mass:
+def lb_to_kg(val):
+	return val / 2.204622622
 
+def kg_to_lb(val):
+	return val * 2.204622622
+
+def lb_to_st(val):
+	return val * 0.071429
+
+def st_to_lb(val):
+	return val / 0.071429
+
+def kg_to_st(val):
+	return lb_to_st(kg_to_lb(val))
+
+def st_to_kg(val):
+	return lb_to_kg(st_to_lb(val))
+
+class Main_Units:
 	# val - value to convert, unit_1 - convert from, unit_2 - convert to
 	def __init__(self, val, unit_1, unit_2):
 		self.val = val
 		self.unit_1 = unit_1
 		self.unit_2 = unit_2
 
-	def lb_to_kg(self):
-		return self.val / 2.204622622
-
-	def kg_to_lb(val):
-		return self.val * 2.204622622
-
-	def lb_to_st(self):
-		return self.val / 0.071429
-
-	def st_to_lb(self):
-		return self.val * 0.071429
-
-	def kg_to_st(self):
-		return Mass.lb_to_st(Mass.kg_to_lb(self.val))
-
-	def st_to_kg(self):
-		return Mass.lb_to_kg(Mass.st_to_lb(self.val))
+class Mass(Main_Units):
 
 	def convert(self):
 		if self.unit_1 == 'lb':
 			if self.unit_2 == 'kg':
-				return Mass.lb_to_kg(self)
+				return lb_to_kg(self.val)
 
 			elif self.unit_2 == 'st':
-				return Mass.lb_to_st(self)
+				return lb_to_st(self.val)
 
 		elif self.unit_1 == 'kg':
 			if self.unit_2 == 'lb':
-				return Mass.kg_to_lb(self)
+				return kg_to_lb(self.val)
 
 			elif self.unit_2 == 'st':
-				return Mass.kg_to_st(self)
+				return kg_to_st(self.val)
 
 		else:
 			if self.unit_2 == 'lb':
-				return Mass.st_to_lb(self)
+				return st_to_lb(self.val)
 
 			elif self.unit_2 == 'kg':
-				return Mass.st_to_kg(self)
+				return st_to_kg(self.val)
 
 
 my_val = 34
-my_1 = 'lb'
+my_1 = 'st'
 my_2 = 'kg'
 x = Mass(my_val, my_1, my_2)
 print(x.convert())
