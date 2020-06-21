@@ -40,25 +40,49 @@ def m_to_yd(val):
 def yd_to_m(val):
 	return val * 0.9144
 
-# mile and kilometre
+# mile and kilometre + miles/hour and kilometres/hour
 def mile_to_km(val):
 	return val * 1.609344
 
 def km_to_mile(val):
 	return val / 1.609344
 
+# miles/hour and knots
 def mph_to_kts(val):
 	return val / 1.15078
 
 def kts_to_mph(val):
 	return val * 1.15078
 
+# kilometres/hour and knots
 def kmph_to_kts(val):
 	return mph_to_kts(km_to_mile(val))
 
 def kts_to_kmph(val):
 	return mile_to_km(kts_to_mph(val))
 
+# fahrenheit and celsius
+def f_to_c(val):
+	return ((val - 32) * 5) / 9
+
+def c_to_f(val):
+	return (val * 1.8) + 32
+
+# celsius and kelvin
+def c_to_k(val):
+	return val + 273.15
+
+def k_to_c(val):
+	return val - 273.15
+
+# fahrenheit and kelvin
+def f_to_k(val):
+	return c_to_k(f_to_c(val))
+
+def k_to_f(val):
+	return c_to_f(k_to_c(val))
+
+# parent-class
 class main_units:
 	# val - value to convert, unit_1 - convert from, unit_2 - convert to
 	def __init__(self, val, unit_1, unit_2):
@@ -66,6 +90,7 @@ class main_units:
 		self.unit_1 = unit_1
 		self.unit_2 = unit_2
 
+# sub-classes of parent-class - 6 initial options of what to convert
 class mass(main_units):
 	def convert(self):
 
@@ -135,6 +160,30 @@ class speed(main_units):
 			elif self.unit_2 == 'kmph':
 				return kts_to_kmph(self.val)
 
+class temperature(main_units):
+	def convert(self):
+
+		if self.unit_1 == 'c':
+			if self.unit_2 == 'f':
+				return c_to_f(self.val)
+
+			elif self.unit_2 == 'k':
+				return c_to_k(self.val)
+
+		elif self.unit_1 == 'f':
+			if self.unit_2 == 'c':
+				return f_to_c(self.val)
+
+			elif self.unit_2 == 'k':
+				return f_to_k(self.val)
+
+		elif self.unit_1 == 'k':
+			if self.unit_2 == 'c':
+				return k_to_c(self.val)
+
+			elif self.unit_2 == 'f':
+				return k_to_f(self.val)
+
 
 my_val_mass = 34
 my_1_mass = 'st'
@@ -153,6 +202,12 @@ my_1_speed = 'kmph'
 my_2_speed = 'kts'
 z = speed(my_val_speed, my_1_speed, my_2_speed)
 print(z.convert())
+
+my_val_temp = 100
+my_1_temp = 'f'
+my_2_temp = 'k'
+a = temperature(my_val_temp, my_1_temp, my_2_temp)
+print(a.convert())
 
 # # all colours
 # black = (0, 0, 0)
