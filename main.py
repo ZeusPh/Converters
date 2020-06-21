@@ -82,6 +82,27 @@ def f_to_k(val):
 def k_to_f(val):
 	return c_to_f(k_to_c(val))
 
+# dirham and dollar
+def usd_to_aed(val):
+	return val * 3.6725
+
+def aed_to_usd(val):
+	return val / 3.6725
+
+# pound and dirham
+def gbp_to_aed(val):
+	return val * 4.53825
+
+def aed_to_gbp(val):
+	return val / 4.53825
+
+# pound and dollar
+def usd_to_gbp(val):
+	return val / 1.23574
+
+def gbp_to_usd(val):
+	return val * 1.23574
+
 # parent-class
 class main_units:
 	# val - value to convert, unit_1 - convert from, unit_2 - convert to
@@ -184,6 +205,30 @@ class temperature(main_units):
 			elif self.unit_2 == 'f':
 				return k_to_f(self.val)
 
+class currency(main_units):
+	def convert(self):
+
+		if self.unit_1 == 'aed':
+			if self.unit_2 == 'usd':
+				return aed_to_usd(self.val)
+
+			elif self.unit_2 == 'gbp':
+				return aed_to_gbp(self.val)
+
+		elif self.unit_1 == 'usd':
+			if self.unit_2 == 'aed':
+				return usd_to_aed(self.val)
+
+			elif self.unit_2 == 'gbp':
+				return usd_to_gbp(self.val)
+
+		elif self.unit_1 == 'gbp':
+			if self.unit_2 == 'aed':
+				return gbp_to_aed(self.val)
+
+			elif self.unit_2 == 'usd':
+				return gbp_to_usd(self.val)
+
 
 my_val_mass = 34
 my_1_mass = 'st'
@@ -208,6 +253,12 @@ my_1_temp = 'f'
 my_2_temp = 'k'
 a = temperature(my_val_temp, my_1_temp, my_2_temp)
 print(a.convert())
+
+my_val_curr = 100
+my_1_curr = 'gbp'
+my_2_curr = 'usd'
+b = currency(my_val_curr, my_1_curr, my_2_curr)
+print(b.convert())
 
 # # all colours
 # black = (0, 0, 0)
