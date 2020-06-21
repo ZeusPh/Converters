@@ -47,6 +47,18 @@ def mile_to_km(val):
 def km_to_mile(val):
 	return val / 1.609344
 
+def mph_to_kts(val):
+	return val / 1.15078
+
+def kts_to_mph(val):
+	return val * 1.15078
+
+def kmph_to_kts(val):
+	return mph_to_kts(km_to_mile(val))
+
+def kts_to_kmph(val):
+	return mile_to_km(kts_to_mph(val))
+
 class main_units:
 	# val - value to convert, unit_1 - convert from, unit_2 - convert to
 	def __init__(self, val, unit_1, unit_2):
@@ -99,6 +111,30 @@ class length(main_units):
 		elif self.unit_1 == 'km' and self.unit_2 == 'mile':
 			return km_to_mile(self.val)
 
+class speed(main_units):
+	def convert(self):
+
+		if self.unit_1 == 'mph':
+			if self.unit_2 == 'kmph':
+				return mile_to_km(self.val)
+
+			elif self.unit_2 == 'kts':
+				return mph_to_kts(self.val)
+
+		elif self.unit_1 == 'kmph':
+			if self.unit_2 == 'mph':
+				return km_to_mile(self.val)
+
+			elif self.unit_2 == 'kts':
+				return kmph_to_kts(self.val)
+
+		elif self.unit_1 == 'kts':
+			if self.unit_2 == 'mph':
+				return kts_to_mph(self.val)
+
+			elif self.unit_2 == 'kmph':
+				return kts_to_kmph(self.val)
+
 
 my_val_mass = 34
 my_1_mass = 'st'
@@ -111,6 +147,12 @@ my_1_length = 'km'
 my_2_length = 'mile'
 y = length(my_val_length, my_1_length, my_2_length)
 print(y.convert())
+
+my_val_speed = 100
+my_1_speed = 'kmph'
+my_2_speed = 'kts'
+z = speed(my_val_speed, my_1_speed, my_2_speed)
+print(z.convert())
 
 # # all colours
 # black = (0, 0, 0)
