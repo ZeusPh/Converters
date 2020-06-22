@@ -3,6 +3,7 @@
 # all libraries
 import pygame
 from pygame.locals import *
+import pygame_gui
 
 # all functions + classes
 # pound and kg
@@ -230,71 +231,123 @@ class currency(main_units):
 				return gbp_to_usd(self.val)
 
 
-my_val_mass = 34
-my_1_mass = 'st'
-my_2_mass = 'kg'
-x = mass(my_val_mass, my_1_mass, my_2_mass)
-print(x.convert())
+# my_val_mass = 34
+# my_1_mass = 'st'
+# my_2_mass = 'kg'
+# x = mass(my_val_mass, my_1_mass, my_2_mass)
+# print(x.convert())
 
-my_val_length = 50
-my_1_length = 'km'
-my_2_length = 'mile'
-y = length(my_val_length, my_1_length, my_2_length)
-print(y.convert())
+# my_val_length = 50
+# my_1_length = 'km'
+# my_2_length = 'mile'
+# y = length(my_val_length, my_1_length, my_2_length)
+# print(y.convert())
 
-my_val_speed = 100
-my_1_speed = 'kmph'
-my_2_speed = 'kts'
-z = speed(my_val_speed, my_1_speed, my_2_speed)
-print(z.convert())
+# my_val_speed = 100
+# my_1_speed = 'kmph'
+# my_2_speed = 'kts'
+# z = speed(my_val_speed, my_1_speed, my_2_speed)
+# print(z.convert())
 
-my_val_temp = 100
-my_1_temp = 'f'
-my_2_temp = 'k'
-a = temperature(my_val_temp, my_1_temp, my_2_temp)
-print(a.convert())
+# my_val_temp = 100
+# my_1_temp = 'f'
+# my_2_temp = 'k'
+# a = temperature(my_val_temp, my_1_temp, my_2_temp)
+# print(a.convert())
 
-my_val_curr = 100
-my_1_curr = 'gbp'
-my_2_curr = 'usd'
-b = currency(my_val_curr, my_1_curr, my_2_curr)
-print(b.convert())
+# my_val_curr = 100
+# my_1_curr = 'gbp'
+# my_2_curr = 'usd'
+# b = currency(my_val_curr, my_1_curr, my_2_curr)
+# print(b.convert())
 
-# # all colours
-# black = (0, 0, 0)
+# all colours
+black = (0, 0, 0)
+blue = (32, 92, 188)
 
-# # pygame initialization
-# pygame.init()
+# pygame initialization
+pygame.init()
+clock = pygame.time.Clock()
 
-# # set window
-# display_size = (500, 500)
-# display = pygame.display.set_mode(display_size, 0, 32)
-# pygame.display.set_caption('Converters')
+# set window
+display_size = (800, 800)
+display = pygame.display.set_mode(display_size, 0, 32)
+pygame.display.set_caption('Converters')
 
-# # set dock icon
-# dock_icon = pygame.image.load('Images/converter_icon.png')
-# pygame.display.set_icon(dock_icon)
+# load json files for gui
+manager = pygame_gui.UIManager(display_size, 'data/themes/button_theming.json')
 
-# # set background
-# display.fill(black)
+# set dock icon
+dock_icon = pygame.image.load('Images/converter_icon.png')
+pygame.display.set_icon(dock_icon)
 
-# # creates surface with same size as window - draw/create shapes on it
-# background = pygame.Surface(window)
-# display.blit(background, (0, 0))
+# set background
+display.fill(blue)
 
-# pygame.display.update()
+# creates surface with same size as window - draw/create shapes on it
+background = pygame.Surface(display_size)
+display.blit(background, (0, 0))
 
-# # while running
-# while True:
+pygame.display.update()
 
-# 	# allow keyboard
-# 	key_pressed = pygame.key.get_pressed()
+# main pygame code to run
+def text_objects(text, font):
+	text_surf = font.render(text, True, black)
+	return text_surf, text_surf.get_rect()
 
-# 	# only quit if quit by user - otherwise automatically quits
-# 	for event in pygame.event.get():
-# 		if event.type == QUIT:
-# 			quit()
+# opening screen with instructions
+def introduction():
 
-# # close everything
-# pygame.quit()
-# quit()
+	position = (100, 40)
+	pygame_gui.elements.UIButton(relative_rect = pygame.Rect(position, 
+		(100, 40)), text = 'main button', manager = manager,
+			object_id = '#2,5')
+
+	intro = True
+
+	while intro:
+
+		time_delta = clock.tick(60) / 1000.0
+
+		# if need to close pygame
+		for event in pygame.event.get():
+			if event.type == pygame.QUIT:
+				pygame.quit()
+				quit()
+
+			manager.process_events(event)
+
+		manager.update(time_delta)
+
+		display.blit(background, (0, 0))
+		manager.draw_ui(display)
+
+		pygame.display.update()
+
+		# title CONVERTERS at top of the screen
+		title_text = pygame.font.SysFont("Keyboard.ttf", 115)
+		text_surf, text_rect = text_objects("CONVERTERS", title_text)
+		text_rect.center = ((display_size[0] / 2), (display_size[1] / 8))
+		display.blit(text_surf, text_rect)
+
+		pygame.display.update()
+
+
+running = True
+
+while running:
+
+	# allow keyboard
+	key_pressed = pygame.key.get_pressed()
+
+	introduction()
+
+	# only quit if quit by user - otherwise automatically quits
+	for event in pygame.event.get():
+		if event.type == QUIT:
+			running = False
+
+
+# close everything
+pygame.quit()
+quit()
