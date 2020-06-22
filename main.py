@@ -307,13 +307,33 @@ def introduction():
 
 	# instructions button under CONVERTERS title
 	instructions_btn = pygame_gui.elements.UIButton(
-relative_rect = pygame.Rect((301, 175), (200, 100)),
+relative_rect = pygame.Rect((296, 175), (200, 100)),
 text = 'Instructions', manager = manager, object_id = '#instructions')
 
 	# 6 main conversion buttons across middle
-	mass_btn = pygame.gui.elements.UIButton(
-relative_rect = pygame.Rect(500, 100), (200, 100)),
-text = 'Mass', manager = manager, object_id = '#mass'
+	mass_btn = pygame_gui.elements.UIButton(
+relative_rect = pygame.Rect((5, 300), (260, 200)),
+text = 'Mass', manager = manager, object_id = '#6_conversions')
+
+	length_btn = pygame_gui.elements.UIButton(
+relative_rect = pygame.Rect((270, 300), (260, 200)),
+text = 'Length', manager = manager, object_id = '#6_conversions')
+
+	speed_btn = pygame_gui.elements.UIButton(
+relative_rect = pygame.Rect((535, 300), (260, 200)),
+text = 'Speed', manager = manager, object_id = '#6_conversions')
+
+	temp_btn = pygame_gui.elements.UIButton(
+relative_rect = pygame.Rect((5, 505), (260, 200)),
+text = 'Temp', manager = manager, object_id = '#6_conversions')
+
+	curr_btn = pygame_gui.elements.UIButton(
+relative_rect = pygame.Rect((270, 505), (260, 200)),
+text = 'Currency', manager = manager, object_id = '#6_conversions')
+
+	cal_btn = pygame_gui.elements.UIButton(
+relative_rect = pygame.Rect((535, 505), (260, 200)),
+text = 'Calendar', manager = manager, object_id = '#6_conversions')
 
 	intro = True
 
