@@ -264,6 +264,7 @@ class currency(main_units):
 # all colours
 black = (0, 0, 0)
 blue = (32, 92, 188)
+gray = (56, 77, 95)
 
 # pygame initialization
 pygame.init()
@@ -275,14 +276,14 @@ display = pygame.display.set_mode(display_size, 0, 32)
 pygame.display.set_caption('Converters')
 
 # load json files for gui
-manager = pygame_gui.UIManager(display_size, 'data/themes/button_theming.json')
+manager = pygame_gui.UIManager(display_size, 'themes/button_themes.json')
 
 # set dock icon
 dock_icon = pygame.image.load('Images/converter_icon.png')
 pygame.display.set_icon(dock_icon)
 
 # set background
-display.fill(blue)
+display.fill(gray)
 
 # creates surface with same size as window - draw/create shapes on it
 background = pygame.Surface(display_size)
@@ -298,10 +299,21 @@ def text_objects(text, font):
 # opening screen with instructions
 def introduction():
 
-	position = (100, 40)
-	pygame_gui.elements.UIButton(relative_rect = pygame.Rect(position, 
-		(100, 40)), text = 'main button', manager = manager,
-			object_id = '#2,5')
+	# title CONVERTERS at top of the screen
+	title_text = pygame.font.Font("fonts/Montserrat-Bold.ttf", 105)
+	text_surf, text_rect = text_objects("CONVERTERS", title_text)
+	text_rect.center = ((display_size[0] / 2), (display_size[1] / 8))
+	display.blit(text_surf, text_rect)
+
+	# instructions button under CONVERTERS title
+	instructions_btn = pygame_gui.elements.UIButton(
+relative_rect = pygame.Rect((301, 175), (200, 100)),
+text = 'Instructions', manager = manager, object_id = '#instructions')
+
+	# 6 main conversion buttons across middle
+	mass_btn = pygame.gui.elements.UIButton(
+relative_rect = pygame.Rect(500, 100), (200, 100)),
+text = 'Mass', manager = manager, object_id = '#mass'
 
 	intro = True
 
@@ -321,14 +333,6 @@ def introduction():
 
 		display.blit(background, (0, 0))
 		manager.draw_ui(display)
-
-		pygame.display.update()
-
-		# title CONVERTERS at top of the screen
-		title_text = pygame.font.SysFont("Keyboard.ttf", 115)
-		text_surf, text_rect = text_objects("CONVERTERS", title_text)
-		text_rect.center = ((display_size[0] / 2), (display_size[1] / 8))
-		display.blit(text_surf, text_rect)
 
 		pygame.display.update()
 
