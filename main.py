@@ -5,6 +5,37 @@ import pygame
 from pygame.locals import *
 import pygame_gui
 
+# all colours
+black = (0, 0, 0)
+blue = (32, 92, 188)
+gray = (56, 77, 95)
+green = (8, 76, 8)
+
+# pygame initialization
+pygame.init()
+clock = pygame.time.Clock()
+
+# set window
+display_size = (800, 800)
+display = pygame.display.set_mode(display_size, 0, 32)
+pygame.display.set_caption('Converters')
+
+# load json files for gui
+manager = pygame_gui.UIManager(display_size, 'themes/button_themes.json')
+
+# set dock icon
+dock_icon = pygame.image.load('images/converter_icon.png')
+pygame.display.set_icon(dock_icon)
+
+# set background
+display.fill(gray)
+
+# creates surface with same size as window - draw/create shapes on it
+background = pygame.Surface(display_size)
+display.blit(background, (0, 0))
+
+pygame.display.update()
+
 # all functions + classes
 # pound and kg
 def lb_to_kg(val):
@@ -261,43 +292,32 @@ class currency(main_units):
 # b = currency(my_val_curr, my_1_curr, my_2_curr)
 # print(b.convert())
 
-# all colours
-black = (0, 0, 0)
-blue = (32, 92, 188)
-gray = (56, 77, 95)
-
-# pygame initialization
-pygame.init()
-clock = pygame.time.Clock()
-
-# set window
-display_size = (800, 800)
-display = pygame.display.set_mode(display_size, 0, 32)
-pygame.display.set_caption('Converters')
-
-# load json files for gui
-manager = pygame_gui.UIManager(display_size, 'themes/button_themes.json')
-
-# set dock icon
-dock_icon = pygame.image.load('Images/converter_icon.png')
-pygame.display.set_icon(dock_icon)
-
-# set background
-display.fill(gray)
-
-# creates surface with same size as window - draw/create shapes on it
-background = pygame.Surface(display_size)
-display.blit(background, (0, 0))
-
-pygame.display.update()
-
 # main pygame code to run
 def text_objects(text, font):
 	text_surf = font.render(text, True, black)
 	return text_surf, text_surf.get_rect()
 
+# all actions done when keys pressed on any screen
+def universal_key_actions():
+
+	# red x on top left of every window = quit
+	for event in pygame.event.get():
+		if event.type == pygame.QUIT:
+			pygame.quit()
+			quit()
+
+		# press escape to quit
+		if event.type == pygame.KEYDOWN:
+			if event.key == pygame.K_ESCAPE:
+				pygame.quit()
+				quit()
+
+		manager.process_events(event)
+
 # opening screen with instructions
 def introduction():
+
+	display.fill(gray)
 
 	# title CONVERTERS at top of the screen
 	title_text = pygame.font.Font("fonts/Montserrat-Bold.ttf", 105)
@@ -307,47 +327,42 @@ def introduction():
 
 	# instructions button under CONVERTERS title
 	instructions_btn = pygame_gui.elements.UIButton(
-relative_rect = pygame.Rect((296, 175), (200, 100)),
-text = 'Instructions', manager = manager, object_id = '#instructions')
+	relative_rect = pygame.Rect((296, 175), (200, 100)),
+	text = 'Instructions', manager = manager, object_id = '#instructions')
 
 	# 6 main conversion buttons across middle
 	mass_btn = pygame_gui.elements.UIButton(
-relative_rect = pygame.Rect((5, 300), (260, 200)),
-text = 'Mass', manager = manager, object_id = '#6_conversions')
+	relative_rect = pygame.Rect((5, 300), (260, 200)),
+	text = 'Mass', manager = manager, object_id = '#6_conversions')
 
 	length_btn = pygame_gui.elements.UIButton(
-relative_rect = pygame.Rect((270, 300), (260, 200)),
-text = 'Length', manager = manager, object_id = '#6_conversions')
+	relative_rect = pygame.Rect((270, 300), (260, 200)),
+	text = 'Length', manager = manager, object_id = '#6_conversions')
 
 	speed_btn = pygame_gui.elements.UIButton(
-relative_rect = pygame.Rect((535, 300), (260, 200)),
-text = 'Speed', manager = manager, object_id = '#6_conversions')
+	relative_rect = pygame.Rect((535, 300), (260, 200)),
+	text = 'Speed', manager = manager, object_id = '#6_conversions')
 
 	temp_btn = pygame_gui.elements.UIButton(
-relative_rect = pygame.Rect((5, 505), (260, 200)),
-text = 'Temp', manager = manager, object_id = '#6_conversions')
+	relative_rect = pygame.Rect((5, 505), (260, 200)),
+	text = 'Temp', manager = manager, object_id = '#6_conversions')
 
 	curr_btn = pygame_gui.elements.UIButton(
-relative_rect = pygame.Rect((270, 505), (260, 200)),
-text = 'Currency', manager = manager, object_id = '#6_conversions')
+	relative_rect = pygame.Rect((270, 505), (260, 200)),
+	text = 'Currency', manager = manager, object_id = '#6_conversions')
 
 	cal_btn = pygame_gui.elements.UIButton(
-relative_rect = pygame.Rect((535, 505), (260, 200)),
-text = 'Calendar', manager = manager, object_id = '#6_conversions')
+	relative_rect = pygame.Rect((535, 505), (260, 200)),
+	text = 'Calendar', manager = manager, object_id = '#6_conversions')
 
 	intro = True
 
 	while intro:
 
+		# don't load faster than needed
 		time_delta = clock.tick(60) / 1000.0
 
-		# if need to close pygame
-		for event in pygame.event.get():
-			if event.type == pygame.QUIT:
-				pygame.quit()
-				quit()
-
-			manager.process_events(event)
+		universal_key_actions()
 
 		manager.update(time_delta)
 
@@ -356,21 +371,21 @@ text = 'Calendar', manager = manager, object_id = '#6_conversions')
 
 		pygame.display.update()
 
+def instructions():
 
-running = True
+	display.fill(green)
 
-while running:
+	running = True
 
-	# allow keyboard
-	key_pressed = pygame.key.get_pressed()
+	while running:
 
-	introduction()
+		# don't load faster than needed
+		time_delta = clock.tick(60) / 1000
 
-	# only quit if quit by user - otherwise automatically quits
-	for event in pygame.event.get():
-		if event.type == QUIT:
-			running = False
+		universal_key_actions()
 
+
+introduction()
 
 # close everything
 pygame.quit()
