@@ -23,7 +23,7 @@ or
 
 $ python main.py
 
-depending on however python 3 is called on Terminal
+depending on whatever python 3 is called on Terminal
 
 ON WINDOWS:
 
