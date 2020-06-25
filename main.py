@@ -14,8 +14,9 @@ green = (8, 76, 8)
 yellow = (202, 142, 23)
 white = (197, 203, 216)
 
-# used later to go back to previous screen
+# used to identify where to go when p pressed
 curr_screen = None
+prev_screen = None
 
 # pygame initialization
 pygame.init()
@@ -275,17 +276,19 @@ def text_objects(text, font):
 	text_surf = font.render(text, True, black)
 	return text_surf, text_surf.get_rect()
 
-# def return_prev_screen(prev_screen):
+def return_to_prev_screen(prev_screen, curr_screen):
 
-# 	if curr_screen == 'main':
-# 		pass
+	if prev_screen == 'None':
+		introduction(prev_screen, curr_screen, manager)
 
-# 	elif curr_screen == 'introduction':
+	elif prev_screen == 'instructions':
+		instructions(prev_screen, curr_screen)
 
-
+	elif prev_screen == 'main':
+		introduction(prev_screen, curr_screen, manager)
 
 # all actions done when keys pressed on any screen
-def universal_key_actions():
+def universal_key_actions(prev_screen, curr_screen):
 
 	# don't load faster than needed
 	clock.tick(15)
@@ -306,22 +309,25 @@ def universal_key_actions():
 
 			# press i to see instructions
 			if event.key == pygame.K_i:
-				instructions()
+				instructions(prev_screen, curr_screen)
 
 			if event.key == pygame.K_p:
-				pass
-				# return_prev_screen()
+				return_to_prev_screen(prev_screen, curr_screen)
 
 		manager.process_events(event)
 
 	manager.update(time_delta)
 
 # opening screen with instructions
-def introduction():
+def introduction(prev_screen, curr_screen, manager):
 
+	print('intro')
+
+	prev_screen = curr_screen
 	curr_screen = 'main'
 
-	# set window + clear screen
+	display_size = (800, 800)
+	display = pygame.display.set_mode(display_size, 0, 32)
 	pygame.display.set_caption('Converters')
 
 	display.fill(gray)
@@ -366,7 +372,7 @@ def introduction():
 
 	while running:
 
-		universal_key_actions()
+		universal_key_actions(prev_screen, curr_screen)
 
 		display.blit(background, (0, 0))
 		manager.draw_ui(display)
@@ -377,15 +383,18 @@ def introduction():
 				if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
 
 					if event.ui_element == instructions_btn:
-						instructions()
+						instructions(prev_screen, curr_screen)
 
 		display.blit(background, (0, 0))
 		manager.draw_ui(display)
 
 		pygame.display.update()
 
-def instructions():
+def instructions(prev_screen, curr_screen):
 
+	print('instructions')
+
+	prev_screen = curr_screen
 	curr_screen = 'instructions'
 
 	# set window + clear screen
@@ -400,43 +409,43 @@ def instructions():
 
 	while running:
 
-		universal_key_actions()
+		universal_key_actions(prev_screen, curr_screen)
 
 		# instructions' text
 		text_line_font = pygame.font.Font('fonts/Montserrat-Regular.ttf', 25)
 		text_line_0 = text_line_font.render('Controls:', 1, yellow)
-		text_line_1 = text_line_font.render('- To quit, either click the red \
-button at the top left, or press', 1, white)
+		text_line_1 = text_line_font.render('- To quit, either click the red '\
+		+ 'button at the top left, or press', 1, white)
 		text_line_2 = text_line_font.render('esc on the keyboard.', 1, white)
-		text_line_3 = text_line_font.render('- To go back to the previous \
-page you were on, press p on the ', 1, white)
+		text_line_3 = text_line_font.render('- To go back to the previous '\
+		+ 'page you were on, press p on the ', 1, white)
 		text_line_4 = text_line_font.render('keyboard.', 1, white)
-		text_line_5 = text_line_font.render('- To open up this page again, \
-press i on the keyboard.', 1, white)
-		text_line_6 = text_line_font.render('- You can click on any buttons \
-- buttons always light up when ', 1, white)
+		text_line_5 = text_line_font.render('- To open up this page again, '\
+		+ 'press i on the keyboard.', 1, white)
+		text_line_6 = text_line_font.render('- You can click on any buttons '\
+		+ '- buttons always light up when ', 1, white)
 		text_line_7 = text_line_font.render('they are hovered over.', 1, white)
 		text_line_8 = text_line_font.render('What to do:', 1, yellow)
-		text_line_9 = text_line_font.render('- First, you must open a page \
-for one of the conversions after ', 1, white)
-		text_line_10 = text_line_font.render('clicking p to go back to the \
-main home screen.', 1, white)
-		text_line_11 = text_line_font.render('- Then, you must click on the \
-dropdown menu on the left side.', 1, white)
-		text_line_12 = text_line_font.render('- After selecting one of the \
-units, you must then select a unit ', 1, white)
-		text_line_13 = text_line_font.render('from the dropdown menu on \
-the right side.', 1, white)
-		text_line_14 = text_line_font.render('- You must then enter the \
-number that needs to be converted ', 1, white)
-		text_line_15 = text_line_font.render('from the dropdown menu on the \
-left in the bar on the left.', 1, white)
-		text_line_16 = text_line_font.render('- After clicking the convert \
-button, the converted value will ', 1, white)
+		text_line_9 = text_line_font.render('- First, you must open a page '\
+		+ 'for one of the conversions after ', 1, white)
+		text_line_10 = text_line_font.render('clicking p to go back to the '\
+		+ 'main home screen.', 1, white)
+		text_line_11 = text_line_font.render('- Then, you must click on the '\
+		+ 'dropdown menu on the left side.', 1, white)
+		text_line_12 = text_line_font.render('- After selecting one of the '\
+		+ 'units, you must then select a unit ', 1, white)
+		text_line_13 = text_line_font.render('from the dropdown menu on '\
+		+ 'the right side.', 1, white)
+		text_line_14 = text_line_font.render('- You must then enter the '\
+		+ 'number that needs to be converted ', 1, white)
+		text_line_15 = text_line_font.render('from the dropdown menu on the '\
+		+ 'left in the bar on the left.', 1, white)
+		text_line_16 = text_line_font.render('- After clicking the convert '\
+		+ 'button, the converted value will ', 1, white)
 		text_line_17 = text_line_font.render('appear on the right.', 1, white)
 		text_line_18 = text_line_font.render('REMEMBER:', 1, red)
-		text_line_19 = text_line_font.render('You MUST choose the value to \
-convert from on the LEFT!', 1, white)
+		text_line_19 = text_line_font.render('You MUST choose the value to '\
+		+ 'convert from on the LEFT!', 1, white)
 
 		display.blit(background, (0, 0))
 
@@ -466,7 +475,7 @@ convert from on the LEFT!', 1, white)
 		pygame.display.update()
 
 
-introduction()
+introduction(prev_screen, curr_screen, manager)
 
 
 # close everything
