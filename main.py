@@ -8,22 +8,23 @@ import pygame_gui
 # all colours
 black = (0, 0, 0)
 blue = (32, 92, 188)
+red = (202, 46, 23)
 gray = (56, 77, 95)
 green = (8, 76, 8)
+yellow = (202, 142, 23)
+white = (197, 203, 216)
+
+# used later to go back to previous screen
+curr_screen = None
 
 # pygame initialization
 pygame.init()
 clock = pygame.time.Clock()
 
-# set window
+# set window + dock icon
 display_size = (800, 800)
 display = pygame.display.set_mode(display_size, 0, 32)
-pygame.display.set_caption('Converters')
-
-# load json files for gui
 manager = pygame_gui.UIManager(display_size, 'themes/button_themes.json')
-
-# set dock icon
 dock_icon = pygame.image.load('images/converter_icon.png')
 pygame.display.set_icon(dock_icon)
 
@@ -262,43 +263,33 @@ class currency(main_units):
 				return gbp_to_usd(self.val)
 
 
+# # how to use the classes to convert
 # my_val_mass = 34
 # my_1_mass = 'st'
 # my_2_mass = 'kg'
 # x = mass(my_val_mass, my_1_mass, my_2_mass)
 # print(x.convert())
 
-# my_val_length = 50
-# my_1_length = 'km'
-# my_2_length = 'mile'
-# y = length(my_val_length, my_1_length, my_2_length)
-# print(y.convert())
-
-# my_val_speed = 100
-# my_1_speed = 'kmph'
-# my_2_speed = 'kts'
-# z = speed(my_val_speed, my_1_speed, my_2_speed)
-# print(z.convert())
-
-# my_val_temp = 100
-# my_1_temp = 'f'
-# my_2_temp = 'k'
-# a = temperature(my_val_temp, my_1_temp, my_2_temp)
-# print(a.convert())
-
-# my_val_curr = 100
-# my_1_curr = 'gbp'
-# my_2_curr = 'usd'
-# b = currency(my_val_curr, my_1_curr, my_2_curr)
-# print(b.convert())
-
-# main pygame code to run
+# main pygame code
 def text_objects(text, font):
 	text_surf = font.render(text, True, black)
 	return text_surf, text_surf.get_rect()
 
+# def return_prev_screen(prev_screen):
+
+# 	if curr_screen == 'main':
+# 		pass
+
+# 	elif curr_screen == 'introduction':
+
+
+
 # all actions done when keys pressed on any screen
 def universal_key_actions():
+
+	# don't load faster than needed
+	clock.tick(15)
+	time_delta = clock.tick(15) / 1000
 
 	# red x on top left of every window = quit
 	for event in pygame.event.get():
@@ -306,22 +297,38 @@ def universal_key_actions():
 			pygame.quit()
 			quit()
 
-		# press escape to quit
 		if event.type == pygame.KEYDOWN:
+
+			# press escape to quit
 			if event.key == pygame.K_ESCAPE:
 				pygame.quit()
 				quit()
 
+			# press i to see instructions
+			if event.key == pygame.K_i:
+				instructions()
+
+			if event.key == pygame.K_p:
+				pass
+				# return_prev_screen()
+
 		manager.process_events(event)
+
+	manager.update(time_delta)
 
 # opening screen with instructions
 def introduction():
 
+	curr_screen = 'main'
+
+	# set window + clear screen
+	pygame.display.set_caption('Converters')
+
 	display.fill(gray)
 
 	# title CONVERTERS at top of the screen
-	title_text = pygame.font.Font("fonts/Montserrat-Bold.ttf", 105)
-	text_surf, text_rect = text_objects("CONVERTERS", title_text)
+	title_text_font = pygame.font.Font('fonts/Montserrat-Bold.ttf', 105)
+	text_surf, text_rect = text_objects('CONVERTERS', title_text_font)
 	text_rect.center = ((display_size[0] / 2), (display_size[1] / 8))
 	display.blit(text_surf, text_rect)
 
@@ -355,16 +362,22 @@ def introduction():
 	relative_rect = pygame.Rect((535, 505), (260, 200)),
 	text = 'Calendar', manager = manager, object_id = '#6_conversions')
 
-	intro = True
+	running = True
 
-	while intro:
-
-		# don't load faster than needed
-		time_delta = clock.tick(60) / 1000.0
+	while running:
 
 		universal_key_actions()
 
-		manager.update(time_delta)
+		display.blit(background, (0, 0))
+		manager.draw_ui(display)
+
+		# where to go when buttons clicked
+		for event in pygame.event.get():
+			if event.type == pygame.USEREVENT:
+				if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
+
+					if event.ui_element == instructions_btn:
+						instructions()
 
 		display.blit(background, (0, 0))
 		manager.draw_ui(display)
@@ -373,19 +386,88 @@ def introduction():
 
 def instructions():
 
+	curr_screen = 'instructions'
+
+	# set window + clear screen
+	display_size = (800, 605)
+	display = pygame.display.set_mode(display_size, 0, 32)
+	pygame.display.set_caption('Instructions')
+	manager = pygame_gui.UIManager(display_size, 'themes/button_themes.json')
+
 	display.fill(green)
 
 	running = True
 
 	while running:
 
-		# don't load faster than needed
-		time_delta = clock.tick(60) / 1000
-
 		universal_key_actions()
+
+		# instructions' text
+		text_line_font = pygame.font.Font('fonts/Montserrat-Regular.ttf', 25)
+		text_line_0 = text_line_font.render('Controls:', 1, yellow)
+		text_line_1 = text_line_font.render('- To quit, either click the red \
+button at the top left, or press', 1, white)
+		text_line_2 = text_line_font.render('esc on the keyboard.', 1, white)
+		text_line_3 = text_line_font.render('- To go back to the previous \
+page you were on, press p on the ', 1, white)
+		text_line_4 = text_line_font.render('keyboard.', 1, white)
+		text_line_5 = text_line_font.render('- To open up this page again, \
+press i on the keyboard.', 1, white)
+		text_line_6 = text_line_font.render('- You can click on any buttons \
+- buttons always light up when ', 1, white)
+		text_line_7 = text_line_font.render('they are hovered over.', 1, white)
+		text_line_8 = text_line_font.render('What to do:', 1, yellow)
+		text_line_9 = text_line_font.render('- First, you must open a page \
+for one of the conversions after ', 1, white)
+		text_line_10 = text_line_font.render('clicking p to go back to the \
+main home screen.', 1, white)
+		text_line_11 = text_line_font.render('- Then, you must click on the \
+dropdown menu on the left side.', 1, white)
+		text_line_12 = text_line_font.render('- After selecting one of the \
+units, you must then select a unit ', 1, white)
+		text_line_13 = text_line_font.render('from the dropdown menu on \
+the right side.', 1, white)
+		text_line_14 = text_line_font.render('- You must then enter the \
+number that needs to be converted ', 1, white)
+		text_line_15 = text_line_font.render('from the dropdown menu on the \
+left in the bar on the left.', 1, white)
+		text_line_16 = text_line_font.render('- After clicking the convert \
+button, the converted value will ', 1, white)
+		text_line_17 = text_line_font.render('appear on the right.', 1, white)
+		text_line_18 = text_line_font.render('REMEMBER:', 1, red)
+		text_line_19 = text_line_font.render('You MUST choose the value to \
+convert from on the LEFT!', 1, white)
+
+		display.blit(background, (0, 0))
+
+		# put instructions on the screen
+		display.blit(text_line_0, (5, (27 * 0)))
+		display.blit(text_line_1, (5, (27 * 1)))
+		display.blit(text_line_2, (5, (27 * 2)))
+		display.blit(text_line_3, (5, (27 * 3)))
+		display.blit(text_line_4, (5, (27 * 4)))
+		display.blit(text_line_5, (5, (27 * 5)))
+		display.blit(text_line_6, (5, (27 * 6)))
+		display.blit(text_line_7, (5, (27 * 7)))
+		display.blit(text_line_8, (5, (27 * 9)))
+		display.blit(text_line_9, (5, (27 * 10)))
+		display.blit(text_line_10, (5, (27 * 11)))
+		display.blit(text_line_11, (5, (27 * 12)))
+		display.blit(text_line_12, (5, (27 * 13)))
+		display.blit(text_line_13, (5, (27 * 14)))
+		display.blit(text_line_14, (5, (27 * 15)))
+		display.blit(text_line_15, (5, (27 * 16)))
+		display.blit(text_line_16, (5, (27 * 17)))
+		display.blit(text_line_17, (5, (27 * 18)))
+		display.blit(text_line_18, (5, (27 * 20)))
+		display.blit(text_line_19, (5, (27 * 21)))
+
+		manager.draw_ui(display)
+		pygame.display.update()
 
 
 introduction()
+
 
 # close everything
 pygame.quit()
