@@ -4,6 +4,9 @@
 import pygame
 from pygame.locals import *
 import pygame_gui
+import requests
+# file not included on github - refer to README
+import APIs
 
 # all colours
 black = (0, 0, 0)
@@ -119,27 +122,6 @@ def f_to_k(val):
 def k_to_f(val):
 	return c_to_f(k_to_c(val))
 
-# dirham and dollar
-def usd_to_aed(val):
-	return val * 3.6725
-
-def aed_to_usd(val):
-	return val / 3.6725
-
-# pound and dirham
-def gbp_to_aed(val):
-	return val * 4.53825
-
-def aed_to_gbp(val):
-	return val / 4.53825
-
-# pound and dollar
-def usd_to_gbp(val):
-	return val / 1.23574
-
-def gbp_to_usd(val):
-	return val * 1.23574
-
 # parent-class
 class main_units:
 	# val - value to convert, unit_1 - convert from, unit_2 - convert to
@@ -243,36 +225,39 @@ class temperature(main_units):
 				return k_to_f(self.val)
 
 class currency(main_units):
-	def convert(self):
+	# empty dict to store the conversion rates
+	rates = {}
 
-		if self.unit_1 == 'aed':
-			if self.unit_2 == 'usd':
-				return aed_to_usd(self.val)
+	def __init__(self, url):
+		data = requests.get(url).json()
 
-			elif self.unit_2 == 'gbp':
-				return aed_to_gbp(self.val)
+		# Extracting only the rates from the json data
+		self.rates = data["rates"]
 
-		elif self.unit_1 == 'usd':
-			if self.unit_2 == 'aed':
-				return usd_to_aed(self.val)
+	# function to do a simple cross multiplication between
+	# the amount and the conversion rates
+	def convert(self, amount, from_currency, to_currency):
+		if from_currency != 'EUR':
+			amount = amount / self.rates[from_currency.upper()]
 
-			elif self.unit_2 == 'gbp':
-				return usd_to_gbp(self.val)
+		# limiting the precision to 2 decimal places
+		amount = round(amount * self.rates[to_currency.upper()], 2)
+		return amount
 
-		elif self.unit_1 == 'gbp':
-			if self.unit_2 == 'aed':
-				return gbp_to_aed(self.val)
-
-			elif self.unit_2 == 'usd':
-				return gbp_to_usd(self.val)
-
-
-# # how to use the classes to convert
+# # how to use the class mass-temp to convert:
 # my_val_mass = 34
 # my_1_mass = 'st'
 # my_2_mass = 'kg'
 # x = mass(my_val_mass, my_1_mass, my_2_mass)
 # print(x.convert())
+
+# # how to use the class currency to convert:
+# # Driver code
+# if __name__ == "__main__":
+# 	# Use API from fixer.io w/ requests
+# 	url = str.__add__('http://data.fixer.io/api/latest?access_key=', APIs.fixer_API)
+# 	c = currency(url)
+# 	print(c.convert(100, 'usd', 'aed'))
 
 # main pygame code
 def text_objects(text, font):
@@ -566,7 +551,9 @@ def cal_wdw(prev_screen, curr_screen):
 	pass
 
 
-introduction(prev_screen, curr_screen)
+# driver code
+if __name__ == "__main__":
+	introduction(prev_screen, curr_screen)
 
 # close everything
 pygame.quit()

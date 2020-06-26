@@ -28,3 +28,20 @@ depending on whatever python 3 is called on Terminal
 ON WINDOWS:
 
 $ python main.py
+
+
+
+In order to use the conversion API, you must first create a file called with
+the filename 'APIs.py'.
+
+Once you have done this, visit https://fixer.io/ and sign up with a free plan,
+following the instructions to get the API.
+
+Once you have the api, open APIs.py and enter the following code, with YOURAPI
+replaced with the actual API as a string:
+
+fixer_API = YOURAPI
+
+e.g.
+
+fixer_API = 'blahblahblahblahblahblahblahblahblah'
