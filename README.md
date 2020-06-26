@@ -10,28 +10,28 @@ Dependencies are in `requirements.txt`
 
 1. To install the dependencies, first go to converters directory, once in,
 
-	- ON MAC run:
+- ON MAC run:
 ```
 	$ pip3 install -r requirements.txt
 ```
-	- ON WINDOWS run:
+- ON WINDOWS run:
 ```
 $ pip install -r requirements.txt
 ```
 
 2. Afterwards, you can run the python file `main.py` with,
 
-	- ON MAC:
+- ON MAC:
 ```
 $ python3 main.py
 ```
-		- or
+	- or
 ```
 $ python main.py
 ```
 depending on whatever python 3 is called on Terminal
 
-	- ON WINDOWS:
+- ON WINDOWS:
 ```
 $ python main.py
 ```
