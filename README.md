@@ -12,7 +12,7 @@ Dependencies are in `requirements.txt`
 
 - ON MAC run:
 ```
-	$ pip3 install -r requirements.txt
+$ pip3 install -r requirements.txt
 ```
 - ON WINDOWS run:
 ```
@@ -25,7 +25,7 @@ $ pip install -r requirements.txt
 ```
 $ python3 main.py
 ```
-	- or
+* or
 ```
 $ python main.py
 ```
