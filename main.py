@@ -10,7 +10,10 @@ black = (0, 0, 0)
 blue = (32, 92, 188)
 red = (202, 46, 23)
 gray = (56, 77, 95)
-green = (8, 76, 8)
+dark_green = (8, 76, 8)
+light_green = (8, 134, 8)
+dark_orange = (108, 63, 14)
+light_orange = (161, 91, 14)
 yellow = (202, 142, 23)
 white = (197, 203, 216)
 
@@ -273,26 +276,53 @@ class currency(main_units):
 
 # main pygame code
 def text_objects(text, font):
+
 	text_surf = font.render(text, True, black)
 	return text_surf, text_surf.get_rect()
+
+# creates button underneath UIButton incase of failure
+# ic = inactive_colour, ac = active_colour
+def button(message, x, y, w, h, txt_size, ic, ac, prev_screen, curr_screen, \
+action = None):
+
+	mouse = pygame.mouse.get_pos()
+	click = pygame.mouse.get_pressed()
+
+	# mouse on screen
+	if x + w > mouse[0] > x and y + h > mouse[1] > y:
+		pygame.draw.rect(display, ac, (x, y, w, h))
+
+		# on button click
+		if click[0] == 1 and action is not None:
+			action(prev_screen, curr_screen)
+
+	# always draw button
+	else:
+		pygame.draw.rect(display, ic, (x, y, w, h))
+
+	# show button
+	small_text = pygame.font.SysFont("Montserrat-Regular.ttf", txt_size)
+	text_surf, text_rect = text_objects(message, small_text)
+	text_rect.center = ((x + (w / 2)), (y + (h / 2)))
+	display.blit(text_surf, text_rect)
 
 def return_to_prev_screen(prev_screen, curr_screen):
 
 	if prev_screen == 'None':
-		introduction(prev_screen, curr_screen, manager)
+		introduction(prev_screen, curr_screen)
 
 	elif prev_screen == 'instructions':
 		instructions(prev_screen, curr_screen)
 
 	elif prev_screen == 'main':
-		introduction(prev_screen, curr_screen, manager)
+		introduction(prev_screen, curr_screen)
 
 # all actions done when keys pressed on any screen
 def universal_key_actions(prev_screen, curr_screen):
 
 	# don't load faster than needed
-	clock.tick(15)
-	time_delta = clock.tick(15) / 1000
+	clock.tick(60) / 1000
+	time_delta = clock.tick(60) / 1000
 
 	# red x on top left of every window = quit
 	for event in pygame.event.get():
@@ -311,21 +341,26 @@ def universal_key_actions(prev_screen, curr_screen):
 			if event.key == pygame.K_i:
 				instructions(prev_screen, curr_screen)
 
+			# press p to go to previous screen/window
 			if event.key == pygame.K_p:
 				return_to_prev_screen(prev_screen, curr_screen)
+
+			if event.key == pygame.K_m:
+				introduction(prev_screen, curr_screen)
 
 		manager.process_events(event)
 
 	manager.update(time_delta)
 
 # opening screen with instructions
-def introduction(prev_screen, curr_screen, manager):
+def introduction(prev_screen, curr_screen):
 
 	print('intro')
 
 	prev_screen = curr_screen
 	curr_screen = 'main'
 
+	# set window + clear screen
 	display_size = (800, 800)
 	display = pygame.display.set_mode(display_size, 0, 32)
 	pygame.display.set_caption('Converters')
@@ -343,7 +378,7 @@ def introduction(prev_screen, curr_screen, manager):
 	relative_rect = pygame.Rect((296, 175), (200, 100)),
 	text = 'Instructions', manager = manager, object_id = '#instructions')
 
-	# 6 main conversion buttons across middle
+	# 6 main conversion buttons across middle, UIButton = styled
 	mass_btn = pygame_gui.elements.UIButton(
 	relative_rect = pygame.Rect((5, 300), (260, 200)),
 	text = 'Mass', manager = manager, object_id = '#6_conversions')
@@ -360,7 +395,7 @@ def introduction(prev_screen, curr_screen, manager):
 	relative_rect = pygame.Rect((5, 505), (260, 200)),
 	text = 'Temp', manager = manager, object_id = '#6_conversions')
 
-	curr_btn = pygame_gui.elements.UIButton(
+	currency_btn = pygame_gui.elements.UIButton(
 	relative_rect = pygame.Rect((270, 505), (260, 200)),
 	text = 'Currency', manager = manager, object_id = '#6_conversions')
 
@@ -374,16 +409,51 @@ def introduction(prev_screen, curr_screen, manager):
 
 		universal_key_actions(prev_screen, curr_screen)
 
+		pygame.draw.rect(display, black, instructions_btn)
+
 		display.blit(background, (0, 0))
 		manager.draw_ui(display)
 
-		# where to go when buttons clicked
 		for event in pygame.event.get():
 			if event.type == pygame.USEREVENT:
+				# where to go when buttons clicked
 				if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
-
 					if event.ui_element == instructions_btn:
 						instructions(prev_screen, curr_screen)
+
+					if event.ui_element == mass_btn:
+						mass_wdw(prev_screen, curr_screen)
+
+					if event.ui_element == length_btn:
+						length_wdw(prev_screen, curr_screen)
+
+					if event.ui_element == speed_btn:
+						speed_wdw(prev_screen, curr_screen)
+
+					if event.ui_element == temp_btn:
+						temp_wdw(prev_screen, curr_screen)
+
+					if event.ui_element == currency_btn:
+						currency_wdw(prev_screen, curr_screen)
+
+					if event.ui_element == cal_btn:
+						cal_wdw(prev_screen, curr_screen)
+
+		# fallback if UIButtons don't work
+		button('Instructions', 296, 175, 200, 100, 27, gray, light_green, \
+		prev_screen, curr_screen, instructions)
+		button('Mass', 5, 300, 260, 200, 50, gray, light_orange, prev_screen, \
+		curr_screen, mass_wdw)
+		button('Length', 270, 300, 260, 200, 50, gray, light_orange, prev_screen, \
+		curr_screen, length_wdw)
+		button('Speed', 535, 300, 260, 200, 50, gray, light_orange, prev_screen, \
+		curr_screen, speed_wdw)
+		button('Temp', 5, 505, 260, 200, 50, gray, light_orange, prev_screen, \
+		curr_screen, temp_wdw)
+		button('Currency', 270, 505, 260, 200, 50, gray, light_orange, prev_screen, \
+		curr_screen, currency_wdw)
+		button('Calendar', 535, 505, 260, 200, 50, gray, light_orange, prev_screen, \
+		curr_screen, cal_wdw)
 
 		display.blit(background, (0, 0))
 		manager.draw_ui(display)
@@ -398,12 +468,12 @@ def instructions(prev_screen, curr_screen):
 	curr_screen = 'instructions'
 
 	# set window + clear screen
-	display_size = (800, 605)
+	display_size = (800, 630)
 	display = pygame.display.set_mode(display_size, 0, 32)
 	pygame.display.set_caption('Instructions')
 	manager = pygame_gui.UIManager(display_size, 'themes/button_themes.json')
 
-	display.fill(green)
+	display.fill(dark_green)
 
 	running = True
 
@@ -422,29 +492,31 @@ def instructions(prev_screen, curr_screen):
 		text_line_4 = text_line_font.render('keyboard.', 1, white)
 		text_line_5 = text_line_font.render('- To open up this page again, '\
 		+ 'press i on the keyboard.', 1, white)
-		text_line_6 = text_line_font.render('- You can click on any buttons '\
+		text_line_6 = text_line_font.render('- To go back to the main page, '\
+		+ 'press m on the keyboard.', 1, white)
+		text_line_7 = text_line_font.render('- You can click on any buttons '\
 		+ '- buttons always light up when ', 1, white)
-		text_line_7 = text_line_font.render('they are hovered over.', 1, white)
-		text_line_8 = text_line_font.render('What to do:', 1, yellow)
-		text_line_9 = text_line_font.render('- First, you must open a page '\
+		text_line_8 = text_line_font.render('they are hovered over.', 1, white)
+		text_line_9 = text_line_font.render('What to do:', 1, yellow)
+		text_line_10 = text_line_font.render('- First, you must open a page '\
 		+ 'for one of the conversions after ', 1, white)
-		text_line_10 = text_line_font.render('clicking p to go back to the '\
+		text_line_11 = text_line_font.render('clicking p to go back to the '\
 		+ 'main home screen.', 1, white)
-		text_line_11 = text_line_font.render('- Then, you must click on the '\
+		text_line_12 = text_line_font.render('- Then, you must click on the '\
 		+ 'dropdown menu on the left side.', 1, white)
-		text_line_12 = text_line_font.render('- After selecting one of the '\
+		text_line_13 = text_line_font.render('- After selecting one of the '\
 		+ 'units, you must then select a unit ', 1, white)
-		text_line_13 = text_line_font.render('from the dropdown menu on '\
+		text_line_14 = text_line_font.render('from the dropdown menu on '\
 		+ 'the right side.', 1, white)
-		text_line_14 = text_line_font.render('- You must then enter the '\
+		text_line_15 = text_line_font.render('- You must then enter the '\
 		+ 'number that needs to be converted ', 1, white)
-		text_line_15 = text_line_font.render('from the dropdown menu on the '\
+		text_line_16 = text_line_font.render('from the dropdown menu on the '\
 		+ 'left in the bar on the left.', 1, white)
-		text_line_16 = text_line_font.render('- After clicking the convert '\
+		text_line_17 = text_line_font.render('- After clicking the convert '\
 		+ 'button, the converted value will ', 1, white)
-		text_line_17 = text_line_font.render('appear on the right.', 1, white)
-		text_line_18 = text_line_font.render('REMEMBER:', 1, red)
-		text_line_19 = text_line_font.render('You MUST choose the value to '\
+		text_line_18 = text_line_font.render('appear on the right.', 1, white)
+		text_line_19 = text_line_font.render('REMEMBER:', 1, red)
+		text_line_20 = text_line_font.render('You MUST choose the value to '\
 		+ 'convert from on the LEFT!', 1, white)
 
 		display.blit(background, (0, 0))
@@ -458,7 +530,7 @@ def instructions(prev_screen, curr_screen):
 		display.blit(text_line_5, (5, (27 * 5)))
 		display.blit(text_line_6, (5, (27 * 6)))
 		display.blit(text_line_7, (5, (27 * 7)))
-		display.blit(text_line_8, (5, (27 * 9)))
+		display.blit(text_line_8, (5, (27 * 8)))
 		display.blit(text_line_9, (5, (27 * 10)))
 		display.blit(text_line_10, (5, (27 * 11)))
 		display.blit(text_line_11, (5, (27 * 12)))
@@ -468,15 +540,33 @@ def instructions(prev_screen, curr_screen):
 		display.blit(text_line_15, (5, (27 * 16)))
 		display.blit(text_line_16, (5, (27 * 17)))
 		display.blit(text_line_17, (5, (27 * 18)))
-		display.blit(text_line_18, (5, (27 * 20)))
+		display.blit(text_line_18, (5, (27 * 19)))
 		display.blit(text_line_19, (5, (27 * 21)))
+		display.blit(text_line_20, (5, (27 * 22)))
 
 		manager.draw_ui(display)
 		pygame.display.update()
 
+def mass_wdw(prev_screen, curr_screen):
+	pass
 
-introduction(prev_screen, curr_screen, manager)
+def length_wdw(prev_screen, curr_screen):
+	pass
 
+def speed_wdw(prev_screen, curr_screen):
+	pass
+
+def temp_wdw(prev_screen, curr_screen):
+	pass
+
+def currency_wdw(prev_screen, curr_screen):
+	pass
+
+def cal_wdw(prev_screen, curr_screen):
+	pass
+
+
+introduction(prev_screen, curr_screen)
 
 # close everything
 pygame.quit()
