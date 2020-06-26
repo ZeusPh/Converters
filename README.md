@@ -1,35 +1,41 @@
+=======================
+
 # CONVERTERS
+
+## REQUIREMENTS
+
+### PYTHON LIBS ON TERMINAL
 
 Dependencies are in requirements.txt
 
 To install the dependencies, first go to converters directory, once in,
 
-ON MAC run:
+- ON MAC run:
 
 $ pip3 install -r requirements.txt
 
-ON WINDOWS run:
+- ON WINDOWS run:
 
 $ pip install -r requirements.txt
 
 
 Afterwards, you can run the python file main.py with,
 
-ON MAC:
+- ON MAC:
 
 $ python3 main.py
 
-or
+- or
 
 $ python main.py
 
 depending on whatever python 3 is called on Terminal
 
-ON WINDOWS:
+- ON WINDOWS:
 
 $ python main.py
 
-
+### PYTHON FILE FOR API
 
 In order to use the conversion API, you must first create a file called with
 the filename 'APIs.py'.
@@ -40,8 +46,14 @@ following the instructions to get the API.
 Once you have the api, open APIs.py and enter the following code, with YOURAPI
 replaced with the actual API as a string:
 
+```python
 fixer_API = YOURAPI
+
+```
 
 e.g.
 
+```python
 fixer_API = 'blahblahblahblahblahblahblahblahblah'
+
+```
