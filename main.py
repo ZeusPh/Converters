@@ -3,6 +3,7 @@
 # all libraries
 import pygame
 from pygame.locals import *
+import sys
 import pygame_gui
 import requests
 # file not included on github - refer to README
@@ -260,18 +261,23 @@ class currency(main_units):
 # 	print(c.convert(100, 'usd', 'aed'))
 
 # main pygame code
-def text_objects(text, font):
+# quickly create objects (rects)
+def text_objects(text, font, colour):
 
-	text_surf = font.render(text, True, black)
+	text_surf = font.render(text, True, colour)
 	return text_surf, text_surf.get_rect()
 
 # creates button underneath UIButton incase of failure
 # ic = inactive_colour, ac = active_colour
-def button(message, x, y, w, h, txt_size, ic, ac, prev_screen, curr_screen, \
-action = None):
+def button(message, x, y, w, h, txt_size, txt_col, ic, ac, prev_screen, \
+curr_screen, action = None):
 
 	mouse = pygame.mouse.get_pos()
 	click = pygame.mouse.get_pressed()
+
+	# on button click
+	if click[0] != 1 and action is None:
+		pass
 
 	# mouse on screen
 	if x + w > mouse[0] > x and y + h > mouse[1] > y:
@@ -287,10 +293,11 @@ action = None):
 
 	# show button
 	small_text = pygame.font.SysFont("Montserrat-Regular.ttf", txt_size)
-	text_surf, text_rect = text_objects(message, small_text)
+	text_surf, text_rect = text_objects(message, small_text, txt_col)
 	text_rect.center = ((x + (w / 2)), (y + (h / 2)))
 	display.blit(text_surf, text_rect)
 
+# used to go back to previous window/screen when p clicked
 def return_to_prev_screen(prev_screen, curr_screen):
 
 	if prev_screen == 'None':
@@ -302,45 +309,11 @@ def return_to_prev_screen(prev_screen, curr_screen):
 	elif prev_screen == 'main':
 		introduction(prev_screen, curr_screen)
 
-# all actions done when keys pressed on any screen
-def universal_key_actions(prev_screen, curr_screen):
+	elif prev_screen == 'mass':
+		mass_wdw(prev_screen, curr_screen)
 
-	# don't load faster than needed
-	clock.tick(60) / 1000
-	time_delta = clock.tick(60) / 1000
-
-	# red x on top left of every window = quit
-	for event in pygame.event.get():
-		if event.type == pygame.QUIT:
-			pygame.quit()
-			quit()
-
-		if event.type == pygame.KEYDOWN:
-
-			# press escape to quit
-			if event.key == pygame.K_ESCAPE:
-				pygame.quit()
-				quit()
-
-			# press i to see instructions
-			if event.key == pygame.K_i:
-				instructions(prev_screen, curr_screen)
-
-			# press p to go to previous screen/window
-			if event.key == pygame.K_p:
-				return_to_prev_screen(prev_screen, curr_screen)
-
-			if event.key == pygame.K_m:
-				introduction(prev_screen, curr_screen)
-
-		manager.process_events(event)
-
-	manager.update(time_delta)
-
-# opening screen with instructions
+# opening screen with all main buttons (conversions + instructions)
 def introduction(prev_screen, curr_screen):
-
-	print('intro')
 
 	prev_screen = curr_screen
 	curr_screen = 'main'
@@ -351,12 +324,6 @@ def introduction(prev_screen, curr_screen):
 	pygame.display.set_caption('Converters')
 
 	display.fill(gray)
-
-	# title CONVERTERS at top of the screen
-	title_text_font = pygame.font.Font('fonts/Montserrat-Bold.ttf', 105)
-	text_surf, text_rect = text_objects('CONVERTERS', title_text_font)
-	text_rect.center = ((display_size[0] / 2), (display_size[1] / 8))
-	display.blit(text_surf, text_rect)
 
 	# instructions button under CONVERTERS title
 	instructions_btn = pygame_gui.elements.UIButton(
@@ -388,21 +355,46 @@ def introduction(prev_screen, curr_screen):
 	relative_rect = pygame.Rect((535, 505), (260, 200)),
 	text = 'Calendar', manager = manager, object_id = '#6_conversions')
 
-	running = True
+	# title CONVERTERS at top of the screen
+	title_text_font = pygame.font.Font('fonts/Montserrat-Bold.ttf', 105)
+	text_surf, text_rect = text_objects('CONVERTERS', title_text_font, black)
+	text_rect.center = ((display_size[0] / 2), (display_size[1] / 8))
+	display.blit(text_surf, text_rect)
 
-	while running:
+	while True:
 
-		universal_key_actions(prev_screen, curr_screen)
-
-		pygame.draw.rect(display, black, instructions_btn)
-
-		display.blit(background, (0, 0))
-		manager.draw_ui(display)
+		# don't load faster than needed
+		clock.tick(60) / 1000
+		time_delta = clock.tick(60) / 1000
 
 		for event in pygame.event.get():
+
+			# red x on top left of every window = quit
+			if event.type == pygame.QUIT:
+				pygame.quit()
+				quit()
+
+			if event.type == pygame.KEYDOWN:
+				# press escape to quit
+				if event.key == pygame.K_ESCAPE:
+					pygame.quit()
+					quit()
+
+				# press i to see instructions
+				if event.key == pygame.K_i:
+					instructions(prev_screen, curr_screen)
+
+				# press p to go to previous screen/window
+				if event.key == pygame.K_p:
+					return_to_prev_screen(prev_screen, curr_screen)
+
+				if event.key == pygame.K_m:
+					introduction(prev_screen, curr_screen)
+
 			if event.type == pygame.USEREVENT:
 				# where to go when buttons clicked
 				if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
+
 					if event.ui_element == instructions_btn:
 						instructions(prev_screen, curr_screen)
 
@@ -424,30 +416,31 @@ def introduction(prev_screen, curr_screen):
 					if event.ui_element == cal_btn:
 						cal_wdw(prev_screen, curr_screen)
 
+			manager.process_events(event)
+		manager.update(time_delta)
+
 		# fallback if UIButtons don't work
-		button('Instructions', 296, 175, 200, 100, 27, gray, light_green, \
-		prev_screen, curr_screen, instructions)
-		button('Mass', 5, 300, 260, 200, 50, gray, light_orange, prev_screen, \
-		curr_screen, mass_wdw)
-		button('Length', 270, 300, 260, 200, 50, gray, light_orange, prev_screen, \
-		curr_screen, length_wdw)
-		button('Speed', 535, 300, 260, 200, 50, gray, light_orange, prev_screen, \
-		curr_screen, speed_wdw)
-		button('Temp', 5, 505, 260, 200, 50, gray, light_orange, prev_screen, \
-		curr_screen, temp_wdw)
-		button('Currency', 270, 505, 260, 200, 50, gray, light_orange, prev_screen, \
-		curr_screen, currency_wdw)
-		button('Calendar', 535, 505, 260, 200, 50, gray, light_orange, prev_screen, \
-		curr_screen, cal_wdw)
+		button('Instructions', 296, 175, 200, 100, 27, black, gray, \
+		light_green, prev_screen, curr_screen, instructions)
+		button('Mass', 5, 300, 260, 200, 50, black, gray, light_orange, \
+		prev_screen, curr_screen, mass_wdw)
+		button('Length', 270, 300, 260, 200, 50, black, gray, light_orange, \
+		prev_screen, curr_screen, length_wdw)
+		button('Speed', 535, 300, 260, 200, 50, black, gray, light_orange, \
+		prev_screen, curr_screen, speed_wdw)
+		button('Temp', 5, 505, 260, 200, 50, black, gray, light_orange, \
+		prev_screen, curr_screen, temp_wdw)
+		button('Currency', 270, 505, 260, 200, 50, black, gray, light_orange, \
+		prev_screen, curr_screen, currency_wdw)
+		button('Calendar', 535, 505, 260, 200, 50, black, gray, light_orange, \
+		prev_screen, curr_screen, cal_wdw)
 
 		display.blit(background, (0, 0))
 		manager.draw_ui(display)
+		pygame.display.flip()
 
-		pygame.display.update()
-
+# screen with instruction
 def instructions(prev_screen, curr_screen):
-
-	print('instructions')
 
 	prev_screen = curr_screen
 	curr_screen = 'instructions'
@@ -460,11 +453,38 @@ def instructions(prev_screen, curr_screen):
 
 	display.fill(dark_green)
 
-	running = True
+	while True:
 
-	while running:
+		# don't load faster than needed
+		clock.tick(60) / 1000
+		time_delta = clock.tick(60) / 1000
 
-		universal_key_actions(prev_screen, curr_screen)
+		# red x on top left of every window = quit
+		for event in pygame.event.get():
+			if event.type == pygame.QUIT:
+				pygame.quit()
+				quit()
+
+			if event.type == pygame.KEYDOWN:
+
+				# press escape to quit
+				if event.key == pygame.K_ESCAPE:
+					pygame.quit()
+					quit()
+
+				# press i to see instructions
+				if event.key == pygame.K_i:
+					instructions(prev_screen, curr_screen)
+
+				# press p to go to previous screen/window
+				if event.key == pygame.K_p:
+					return_to_prev_screen(prev_screen, curr_screen)
+
+				if event.key == pygame.K_m:
+					introduction(prev_screen, curr_screen)
+
+			manager.process_events(event)
+		manager.update(time_delta)
 
 		# instructions' text
 		text_line_font = pygame.font.Font('fonts/Montserrat-Regular.ttf', 25)
@@ -530,23 +550,84 @@ def instructions(prev_screen, curr_screen):
 		display.blit(text_line_20, (5, (27 * 22)))
 
 		manager.draw_ui(display)
-		pygame.display.update()
+		pygame.display.flip()
 
+# mass conversion window / screen
 def mass_wdw(prev_screen, curr_screen):
-	pass
 
+	prev_screen = curr_screen
+	curr_screen = 'mass'
+
+	# set window + clear screen
+	display_size = (800, 800)
+	display = pygame.display.set_mode(display_size, 0, 32)
+	pygame.display.set_caption('Mass')
+	manager = pygame_gui.UIManager(display_size, 'themes/button_themes.json')
+
+	display.fill(dark_orange)
+
+	base_font = pygame.font.Font('fonts/Montserrat-Regular.ttf', 32)
+	user_text = ''
+
+	while True:
+		# don't load faster than needed
+		clock.tick(60) / 1000
+		time_delta = clock.tick(60) / 1000
+
+		# red x on top left of every window = quit
+		for event in pygame.event.get():
+
+			if event.type == pygame.QUIT:
+				pygame.quit()
+				quit()
+
+			if event.type == pygame.KEYDOWN:
+
+				user_text += event.unicode
+
+				# press escape to quit
+				if event.key == pygame.K_ESCAPE:
+					pygame.quit()
+					quit()
+
+				# press i to see instructions
+				if event.key == pygame.K_i:
+					instructions(prev_screen, curr_screen)
+
+				# press p to go to previous screen/window
+				if event.key == pygame.K_p:
+					return_to_prev_screen(prev_screen, curr_screen)
+
+				if event.key == pygame.K_m:
+					introduction(prev_screen, curr_screen)
+
+			manager.process_events(event)
+		manager.update(time_delta)
+
+		text_surf = base_font.render(user_text, True, black)
+		display.blit(text_surf, (0, 0))
+
+		display.blit(background, (0, 0))
+		manager.draw_ui(display)
+		pygame.display.flip()
+
+# length conversion window / screen
 def length_wdw(prev_screen, curr_screen):
 	pass
 
+# speed conversion window / screen
 def speed_wdw(prev_screen, curr_screen):
 	pass
 
+# temperature conversion window / screen
 def temp_wdw(prev_screen, curr_screen):
 	pass
 
+# currency conversion window / screen
 def currency_wdw(prev_screen, curr_screen):
 	pass
 
+# calendar conversion window / screen
 def cal_wdw(prev_screen, curr_screen):
 	pass
 
@@ -557,4 +638,4 @@ if __name__ == "__main__":
 
 # close everything
 pygame.quit()
-quit()
+sys.exit()
