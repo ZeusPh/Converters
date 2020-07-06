@@ -267,61 +267,55 @@ def text_objects(text, font, colour):
 	text_surf = font.render(text, True, colour)
 	return text_surf, text_surf.get_rect()
 
-# creates button underneath UIButton incase of failure
-# ic = inactive_colour, ac = active_colour
-def button(message, x, y, w, h, txt_size, txt_col, ic, ac, prev_screen, \
-curr_screen, action = None):
-
-	mouse = pygame.mouse.get_pos()
-	click = pygame.mouse.get_pressed()
-
-	# on button click
-	if click[0] != 1 and action is None:
-		pass
-
-	# mouse on screen
-	if x + w > mouse[0] > x and y + h > mouse[1] > y:
-		pygame.draw.rect(display, ac, (x, y, w, h))
-
-		# on button click
-		if click[0] == 1 and action is not None:
-			action(prev_screen, curr_screen)
-
-	# always draw button
-	else:
-		pygame.draw.rect(display, ic, (x, y, w, h))
-
-	# show button
-	small_text = pygame.font.SysFont("Montserrat-Regular.ttf", txt_size)
-	text_surf, text_rect = text_objects(message, small_text, txt_col)
-	text_rect.center = ((x + (w / 2)), (y + (h / 2)))
-	display.blit(text_surf, text_rect)
-
 # used to go back to previous window/screen when p clicked
 def return_to_prev_screen(prev_screen, curr_screen):
 
-	if prev_screen == 'None':
-		introduction(prev_screen, curr_screen)
+	print('return_to_prev_screen', prev_screen, curr_screen)
+
+	if prev_screen is None:
+		return 'intro', prev_screen, curr_screen
 
 	elif prev_screen == 'instructions':
-		instructions(prev_screen, curr_screen)
+		return 'instructions', prev_screen, curr_screen
 
-	elif prev_screen == 'main':
-		introduction(prev_screen, curr_screen)
+	elif prev_screen == 'intro':
+		return 'intro', prev_screen, curr_screen
 
 	elif prev_screen == 'mass':
-		mass_wdw(prev_screen, curr_screen)
+		return 'mass', prev_screen, curr_screen
+
+# run window/screen based on user's choices
+def screen_to_run(wdw, prev_screen, curr_screen):
+
+	if wdw is False:
+		pygame.quit()
+		quit()
+
+	elif wdw == 'intro':
+		return introduction(prev_screen, curr_screen)
+
+	elif wdw == 'instructions':
+		return instructions(prev_screen, curr_screen)
+
+	elif wdw == 'mass':
+		return mass_wdw(prev_screen, curr_screen)
+
+	elif wdw == 'return_to_prev_screen':
+		return return_to_prev_screen(prev_screen, curr_screen)
+
+	return wdw, prev_screen, curr_screen
 
 # opening screen with all main buttons (conversions + instructions)
 def introduction(prev_screen, curr_screen):
 
 	prev_screen = curr_screen
-	curr_screen = 'main'
+	curr_screen = 'intro'
 
 	# set window + clear screen
 	display_size = (800, 800)
 	display = pygame.display.set_mode(display_size, 0, 32)
 	pygame.display.set_caption('Converters')
+	manager = pygame_gui.UIManager(display_size, 'themes/button_themes.json')
 
 	display.fill(gray)
 
@@ -371,69 +365,52 @@ def introduction(prev_screen, curr_screen):
 
 			# red x on top left of every window = quit
 			if event.type == pygame.QUIT:
-				pygame.quit()
-				quit()
+				return False
 
 			if event.type == pygame.KEYDOWN:
 				# press escape to quit
 				if event.key == pygame.K_ESCAPE:
-					pygame.quit()
-					quit()
+					return False
 
 				# press i to see instructions
 				if event.key == pygame.K_i:
-					instructions(prev_screen, curr_screen)
+					# instructions(prev_screen, curr_screen)
+					return 'instructions', prev_screen, curr_screen
 
 				# press p to go to previous screen/window
 				if event.key == pygame.K_p:
-					return_to_prev_screen(prev_screen, curr_screen)
+					return 'return_to_prev_screen', prev_screen, curr_screen
 
 				if event.key == pygame.K_m:
-					introduction(prev_screen, curr_screen)
+					return 'intro', prev_screen, curr_screen
 
 			if event.type == pygame.USEREVENT:
 				# where to go when buttons clicked
 				if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
 
 					if event.ui_element == instructions_btn:
-						instructions(prev_screen, curr_screen)
+						return 'instructions', prev_screen, curr_screen
 
 					if event.ui_element == mass_btn:
-						mass_wdw(prev_screen, curr_screen)
+						return 'mass', prev_screen, curr_screen
 
 					if event.ui_element == length_btn:
-						length_wdw(prev_screen, curr_screen)
+						return 'length', prev_screen, curr_screen
 
 					if event.ui_element == speed_btn:
-						speed_wdw(prev_screen, curr_screen)
+						return 'speed', prev_screen, curr_screen
 
 					if event.ui_element == temp_btn:
-						temp_wdw(prev_screen, curr_screen)
+						return 'temp', prev_screen, curr_screen
 
 					if event.ui_element == currency_btn:
-						currency_wdw(prev_screen, curr_screen)
+						return 'currency', prev_screen, curr_screen
 
 					if event.ui_element == cal_btn:
-						cal_wdw(prev_screen, curr_screen)
+						return 'cal', prev_screen, curr_screen
 
 			manager.process_events(event)
 		manager.update(time_delta)
-
-		# fallback if UIButtons don't work
-		button('Instructions', 296, 175, 200, 100, 27, black, gray, \
-		light_green, prev_screen, curr_screen, instructions)
-		button('Mass', 5, 300, 260, 200, 50, black, gray, light_orange, \
-		prev_screen, curr_screen, mass_wdw)
-		button('Length', 270, 300, 260, 200, 50, black, gray, light_orange, \
-		prev_screen, curr_screen, length_wdw)
-		button('Speed', 535, 300, 260, 200, 50, black, gray, light_orange, \
-		prev_screen, curr_screen, speed_wdw)
-		button('Temp', 5, 505, 260, 200, 50, black, gray, light_orange, \
-		prev_screen, curr_screen, temp_wdw)
-		button('Currency', 270, 505, 260, 200, 50, black, gray, light_orange, \
-		prev_screen, curr_screen, currency_wdw)
-		button('Calendar', 535, 505, 260, 200, 50, black, gray, light_orange, \
-		prev_screen, curr_screen, cal_wdw)
 
 		display.blit(background, (0, 0))
 		manager.draw_ui(display)
@@ -462,26 +439,24 @@ def instructions(prev_screen, curr_screen):
 		# red x on top left of every window = quit
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
-				pygame.quit()
-				quit()
+				return False
 
 			if event.type == pygame.KEYDOWN:
 
 				# press escape to quit
 				if event.key == pygame.K_ESCAPE:
-					pygame.quit()
-					quit()
+					return False
 
 				# press i to see instructions
 				if event.key == pygame.K_i:
-					instructions(prev_screen, curr_screen)
+					return 'instructions', prev_screen, curr_screen
 
 				# press p to go to previous screen/window
 				if event.key == pygame.K_p:
-					return_to_prev_screen(prev_screen, curr_screen)
+					return 'return_to_prev_screen', prev_screen, curr_screen
 
 				if event.key == pygame.K_m:
-					introduction(prev_screen, curr_screen)
+					return 'intro', prev_screen, curr_screen
 
 			manager.process_events(event)
 		manager.update(time_delta)
@@ -578,8 +553,7 @@ def mass_wdw(prev_screen, curr_screen):
 		for event in pygame.event.get():
 
 			if event.type == pygame.QUIT:
-				pygame.quit()
-				quit()
+				return False
 
 			if event.type == pygame.KEYDOWN:
 
@@ -587,19 +561,18 @@ def mass_wdw(prev_screen, curr_screen):
 
 				# press escape to quit
 				if event.key == pygame.K_ESCAPE:
-					pygame.quit()
-					quit()
+					return False
 
 				# press i to see instructions
 				if event.key == pygame.K_i:
-					instructions(prev_screen, curr_screen)
+					return 'instructions', prev_screen, curr_screen
 
 				# press p to go to previous screen/window
 				if event.key == pygame.K_p:
-					return_to_prev_screen(prev_screen, curr_screen)
+					return 'return_to_prev_screen', prev_screen, curr_screen
 
 				if event.key == pygame.K_m:
-					introduction(prev_screen, curr_screen)
+					return 'intro', prev_screen, curr_screen
 
 			manager.process_events(event)
 		manager.update(time_delta)
@@ -632,9 +605,18 @@ def cal_wdw(prev_screen, curr_screen):
 	pass
 
 
+# used to choose which screen to run
+user_wdw, user_prev, user_curr = True, prev_screen, curr_screen
+
 # driver code
 if __name__ == "__main__":
-	introduction(prev_screen, curr_screen)
+
+	user_wdw, user_prev, user_curr = introduction(user_prev, user_curr)
+
+	while user_wdw is not False:
+		user_wdw, user_prev, user_curr = screen_to_run(user_wdw, user_prev, user_curr)
+
+# TODO: FIX SCREEN FROM MASS SCREEN TO ANY OTHER SCREEN - ONLY WORKS AFTER CLICKING TWICE
 
 # close everything
 pygame.quit()
