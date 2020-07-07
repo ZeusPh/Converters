@@ -542,12 +542,14 @@ def mass_wdw(prev_screen, curr_screen):
 
 	display.fill(dark_orange)
 
-	base_font = pygame.font.Font('fonts/Montserrat-Regular.ttf', 32)
 	user_text = ''
 
-	input_rect = pygame.Rect(75, 400, 200, 50)
-	curr_inp_colour = gray
-	active_rect = False
+	inp_box = pygame_gui.elements.UITextEntryLine(
+	relative_rect = pygame.Rect((75, 400), (250, 50)),
+	manager = manager, object_id = '#input_boxes')
+
+	inp_box.set_allowed_characters(
+	['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '.'])
 
 	while True:
 		# don't load faster than needed
@@ -560,13 +562,11 @@ def mass_wdw(prev_screen, curr_screen):
 			if event.type == pygame.QUIT:
 				return False
 
-			# box to type in is only active when clicked inside
-			if event.type == pygame.MOUSEBUTTONDOWN:
-				if input_rect.collidepoint(event.pos):
-					active_rect = True
-
-				else:
-					active_rect = False
+			if event.type == pygame.USEREVENT:
+				# where to go when buttons clicked
+				if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
+					if event.ui_element == inp_box:
+						user_text = inp_box.get_text()
 
 			if event.type == pygame.KEYDOWN:
 
@@ -585,38 +585,11 @@ def mass_wdw(prev_screen, curr_screen):
 				if event.key == pygame.K_m:
 					return 'intro', prev_screen, curr_screen
 
-				if active_rect is True:
-
-					# remove last character typed
-					if event.key == pygame.K_BACKSPACE:
-						user_text = user_text[: -1]
-
-					# add typed chars to string to be displayed on screen
-					else:
-						user_text += event.unicode
-
 			manager.process_events(event)
 		manager.update(time_delta)
 
 		# don't let previous end of input_rect show
 		display.fill(dark_orange)
-
-		# change border colour, depending on whether clicked inside or not \
-		# of input_rect, whether it's active or not
-		if active_rect:
-			curr_inp_colour = light_blue
-
-		else:
-			curr_inp_colour = gray
-
-		# display actual input_rect on screen
-		pygame.draw.rect(display, curr_inp_colour, input_rect, 3)
-
-		text_surf = base_font.render(user_text, True, black)
-		display.blit(text_surf, (input_rect.x + 5, input_rect.y + 5))
-
-		# original width = 200 px, but if need more space, increase by 10 px
-		input_rect.w = max(200, text_surf.get_width() + 10)
 
 		display.blit(background, (0, 0))
 		manager.draw_ui(display)
