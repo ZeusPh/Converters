@@ -11,7 +11,8 @@ import APIs
 
 # all colours
 black = (0, 0, 0)
-blue = (32, 92, 188)
+light_blue = pygame.Color('lightskyblue3')
+dark_blue = pygame.Color('gray15')
 red = (202, 46, 23)
 gray = (56, 77, 95)
 dark_green = (8, 76, 8)
@@ -544,6 +545,10 @@ def mass_wdw(prev_screen, curr_screen):
 	base_font = pygame.font.Font('fonts/Montserrat-Regular.ttf', 32)
 	user_text = ''
 
+	input_rect = pygame.Rect(75, 400, 200, 50)
+	curr_inp_colour = gray
+	active_rect = False
+
 	while True:
 		# don't load faster than needed
 		clock.tick(60) / 1000
@@ -555,9 +560,15 @@ def mass_wdw(prev_screen, curr_screen):
 			if event.type == pygame.QUIT:
 				return False
 
-			if event.type == pygame.KEYDOWN:
+			# box to type in is only active when clicked inside
+			if event.type == pygame.MOUSEBUTTONDOWN:
+				if input_rect.collidepoint(event.pos):
+					active_rect = True
 
-				user_text += event.unicode
+				else:
+					active_rect = False
+
+			if event.type == pygame.KEYDOWN:
 
 				# press escape to quit
 				if event.key == pygame.K_ESCAPE:
@@ -574,11 +585,38 @@ def mass_wdw(prev_screen, curr_screen):
 				if event.key == pygame.K_m:
 					return 'intro', prev_screen, curr_screen
 
+				if active_rect is True:
+
+					# remove last character typed
+					if event.key == pygame.K_BACKSPACE:
+						user_text = user_text[: -1]
+
+					# add typed chars to string to be displayed on screen
+					else:
+						user_text += event.unicode
+
 			manager.process_events(event)
 		manager.update(time_delta)
 
+		# don't let previous end of input_rect show
+		display.fill(dark_orange)
+
+		# change border colour, depending on whether clicked inside or not \
+		# of input_rect, whether it's active or not
+		if active_rect:
+			curr_inp_colour = light_blue
+
+		else:
+			curr_inp_colour = gray
+
+		# display actual input_rect on screen
+		pygame.draw.rect(display, curr_inp_colour, input_rect, 3)
+
 		text_surf = base_font.render(user_text, True, black)
-		display.blit(text_surf, (0, 0))
+		display.blit(text_surf, (input_rect.x + 5, input_rect.y + 5))
+
+		# original width = 200 px, but if need more space, increase by 10 px
+		input_rect.w = max(200, text_surf.get_width() + 10)
 
 		display.blit(background, (0, 0))
 		manager.draw_ui(display)
@@ -615,8 +653,6 @@ if __name__ == "__main__":
 
 	while user_wdw is not False:
 		user_wdw, user_prev, user_curr = screen_to_run(user_wdw, user_prev, user_curr)
-
-# TODO: FIX SCREEN FROM MASS SCREEN TO ANY OTHER SCREEN - ONLY WORKS AFTER CLICKING TWICE
 
 # close everything
 pygame.quit()
