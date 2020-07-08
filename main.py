@@ -34,6 +34,7 @@ clock = pygame.time.Clock()
 display_size = (800, 800)
 display = pygame.display.set_mode(display_size, 0, 32)
 manager = pygame_gui.UIManager(display_size, 'themes/button_themes.json')
+manager_dd = pygame_gui.UIManager(display_size, 'themes/dropdown_menu_themes.json')
 dock_icon = pygame.image.load('images/converter_icon.png')
 pygame.display.set_icon(dock_icon)
 
@@ -539,19 +540,28 @@ def mass_wdw(prev_screen, curr_screen):
 	display = pygame.display.set_mode(display_size, 0, 32)
 	pygame.display.set_caption('Mass')
 	manager = pygame_gui.UIManager(display_size, 'themes/button_themes.json')
-
+	manager_dd = pygame_gui.UIManager(display_size, 'themes/dropdown_menu_themes.json')
 	display.fill(dark_orange)
 
 	user_text = ''
-
+	# input space for user to enter numbers to be converted
 	inp_box = pygame_gui.elements.UITextEntryLine(
 	relative_rect = pygame.Rect((75, 400), (250, 50)),
 	manager = manager, object_id = '#input_boxes')
+
+	curr_opt_1 = 'kilograms'
+	opt_1_dd = pygame_gui.elements.UIDropDownMenu(
+	options_list = ['kilograms', 'pounds', 'stones'], starting_option = \
+	curr_opt_1, relative_rect = pygame.Rect((75, 100), (250, 75)),
+	manager = manager_dd)
+
+	# print(opt_1_dd.selected_option)
 
 	inp_box.set_allowed_characters(
 	['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '.'])
 
 	while True:
+
 		# don't load faster than needed
 		clock.tick(60) / 1000
 		time_delta = clock.tick(60) / 1000
@@ -586,13 +596,16 @@ def mass_wdw(prev_screen, curr_screen):
 					return 'intro', prev_screen, curr_screen
 
 			manager.process_events(event)
+			manager_dd.process_events(event)
 		manager.update(time_delta)
+		manager_dd.update(time_delta)
 
 		# don't let previous end of input_rect show
 		display.fill(dark_orange)
 
 		display.blit(background, (0, 0))
 		manager.draw_ui(display)
+		manager_dd.draw_ui(display)
 		pygame.display.flip()
 
 # length conversion window / screen
