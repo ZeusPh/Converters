@@ -574,7 +574,6 @@ def mass_wdw(prev_screen, curr_screen):
 
 	inp_box.set_allowed_characters(
 	['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '.'])
-
 	out_box.set_allowed_characters([])
 
 	while True:
@@ -636,11 +635,26 @@ def mass_wdw(prev_screen, curr_screen):
 				# where to go when buttons clicked
 				if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
 
+					# convert and display
 					if event.ui_element == convert_btn:
+
+						out_box.set_text('')
 						user_text = inp_box.get_text()
-						converter = mass(float(user_text), curr_opt_1, curr_opt_2)
-						comp_text = converter.convert()
-						print(comp_text)
+
+						try:
+							converter = mass(float(user_text), curr_opt_1, curr_opt_2)
+						except ValueError:
+							user_text = '0'
+							converter = mass(float(user_text), curr_opt_1, curr_opt_2)
+
+						# TODO: MAKE SURE NO ERROR WHEN KG AND KG CONVERSION \
+						# ROUND ALL TO 2 D.P
+
+						comp_text = str(converter.convert())
+						out_box.set_allowed_characters(
+						['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'])
+						out_box.set_text(comp_text)
+						out_box.set_allowed_characters([])
 
 			manager.process_events(event)
 			manager_dd.process_events(event)
