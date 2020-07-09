@@ -24,14 +24,24 @@
 		}
 	},
 
+	"#drop_down_shape_prototype":
+    {
+        "misc":
+        {
+            "shape": "rounded_rectangle",
+            "shape_corner_radius": "4"
+        }
+    },
+
 	"drop_down_menu":
 	{
+		"prototype": "#drop_down_shape_prototype",
 		"misc":
 		{
 			"shape": "rounded_rectangle",
 			"shape_corner_radius": "20",
-			"border_width": "0",
-			"shadow_width": "0"
+			"shadow_width": "0",
+            "border_width": "0"
 		},
 		"colours":
 		{
@@ -50,8 +60,8 @@
 		{
 			"shape": "rounded_rectangle",
 			"shape_corner_radius": "10",
-			"border_width": "0",
-			"shadow_width": "0"
+			"border_width": "2",
+			"shadow_width": "1"
 		},
 		"font":
 		{
@@ -93,7 +103,7 @@
 		"font":
 		{
 			"name": "montserrat",
-			"size": "0",
+			"size": "1",
 			"bold": "0",
 			"italic": "0"
 		},
@@ -117,6 +127,7 @@
 
 	"drop_down_menu.#drop_down_options_list":
 	{
+		"prototype": "#drop_down_shape_prototype",
 		"font":
 		{
 			"name": "montserrat",
@@ -132,15 +143,21 @@
 			"hovered_text":"#FFFFFF",
 			"normal_border": "#DDDDDD",
 			"hovered_border": "#B0B0B0"
+		},
+		"misc":
+		{
+			"shadow_width": "2",
+			"border_width": "1"
 		}
 	},
 
 	"drop_down_menu.#drop_down_options_list.button":
 	{
+		"prototype": "#drop_down_shape_prototype",
 		"font":
 		{
 			"name": "montserrat",
-			"size": "32",
+			"size": "15",
 			"bold": "0",
 			"italic": "0"
 		},
@@ -152,6 +169,28 @@
 			"hovered_text":"#FFFFFF",
 			"normal_border": "#DDDDDD",
 			"hovered_border": "#B0B0B0"
+		},
+		"misc":
+		{
+			"shadow_width": "0",
+			"border_width": "0",
+			"state_transitions":
+			{
+				"normal_hovered": "0.2",
+				"hovered_normal": "0.2"
+			}
+		}
+	},
+
+	"drop_down_menu.button":
+	{
+		"misc":
+		{
+			"state_transitions":
+			{
+				"normal_hovered": "0.2",
+				"hovered_normal": "0.2"
+			}
 		}
 	}
 }

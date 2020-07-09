@@ -272,8 +272,6 @@ def text_objects(text, font, colour):
 # used to go back to previous window/screen when p clicked
 def return_to_prev_screen(prev_screen, curr_screen):
 
-	print('return_to_prev_screen', prev_screen, curr_screen)
-
 	if prev_screen is None:
 		return 'intro', prev_screen, curr_screen
 
@@ -546,21 +544,60 @@ def mass_wdw(prev_screen, curr_screen):
 	user_text = ''
 	# input space for user to enter numbers to be converted
 	inp_box = pygame_gui.elements.UITextEntryLine(
-	relative_rect = pygame.Rect((75, 400), (250, 50)),
+	relative_rect = pygame.Rect((50, 250), (250, 50)),
 	manager = manager, object_id = '#input_boxes')
 
-	curr_opt_1 = 'kilograms'
+	comp_text = ''
+	# output space where converted number is shown
+	out_box = pygame_gui.elements.UITextEntryLine(
+	relative_rect = pygame.Rect((480, 250), (250, 50)),
+	manager = manager, object_id = '#output_boxes')
+
+	# conversion from
+	curr_opt_1 = 'kg'
 	opt_1_dd = pygame_gui.elements.UIDropDownMenu(
 	options_list = ['kilograms', 'pounds', 'stones'], starting_option = \
-	curr_opt_1, relative_rect = pygame.Rect((75, 100), (250, 75)),
+	'kilograms', relative_rect = pygame.Rect((50, 325), (270, 75)),
 	manager = manager_dd)
 
-	# print(opt_1_dd.selected_option)
+	# conversion to
+	curr_opt_2 = 'lb'
+	opt_2_dd = pygame_gui.elements.UIDropDownMenu(
+	options_list = ['kilograms', 'pounds', 'stones'], starting_option = \
+	'pounds', relative_rect = pygame.Rect((480, 325), (270, 75)),
+	manager = manager_dd)
+
+	# convert button clicked in order to conver
+	convert_btn = pygame_gui.elements.UIButton(
+	relative_rect = pygame.Rect((325, 150), (130, 60)),
+	text = 'Convert', manager = manager, object_id = '#convert')
 
 	inp_box.set_allowed_characters(
 	['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '.'])
 
+	out_box.set_allowed_characters([])
+
 	while True:
+
+		# get curr_opt_1 in abbreviated for to use for conversion
+		if opt_1_dd.selected_option == 'kilograms':
+			curr_opt_1 = 'kg'
+		elif opt_1_dd.selected_option == 'pounds':
+			curr_opt_1 = 'lb'
+		elif opt_1_dd.selected_option == 'stones':
+			curr_opt_1 = 'st'
+		else:
+			pass
+
+		# get curr_opt_2 in abbreviated for to use for conversion
+		if opt_2_dd.selected_option == 'kilograms':
+			curr_opt_2 = 'kg'
+		elif opt_2_dd.selected_option == 'pounds':
+			curr_opt_2 = 'lb'
+		elif opt_2_dd.selected_option == 'stones':
+			curr_opt_2 = 'st'
+		else:
+			pass
 
 		# don't load faster than needed
 		clock.tick(60) / 1000
@@ -594,6 +631,16 @@ def mass_wdw(prev_screen, curr_screen):
 
 				if event.key == pygame.K_m:
 					return 'intro', prev_screen, curr_screen
+
+			if event.type == pygame.USEREVENT:
+				# where to go when buttons clicked
+				if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
+
+					if event.ui_element == convert_btn:
+						user_text = inp_box.get_text()
+						converter = mass(float(user_text), curr_opt_1, curr_opt_2)
+						comp_text = converter.convert()
+						print(comp_text)
 
 			manager.process_events(event)
 			manager_dd.process_events(event)
