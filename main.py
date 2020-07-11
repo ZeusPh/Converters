@@ -90,6 +90,25 @@ def mile_to_km(val):
 def km_to_mile(val):
 	return val / 1.609344
 
+# centimetres, metres and kilometres
+def cm_to_m(val):
+	return val / 100
+
+def m_to_km(val):
+	return val / 1000
+
+def cm_to_km(val):
+	return m_to_km(cm_to_m(val))
+
+def m_to_cm(val):
+	return val * 100
+
+def km_to_m(val):
+	return val * 1000
+
+def km_to_cm(val):
+	return m_to_cm(km_to_m(val))
+
 # miles/hour and knots
 def mph_to_kts(val):
 	return val / 1.15078
@@ -170,23 +189,125 @@ class mass(main_units):
 class length(main_units):
 	def convert(self):
 
-		if self.unit_1 == 'inch' and self.unit_2 == 'cm':
-			return inch_to_cm(self.val)
+		# first dropdown is centimetres
+		if self.unit_1 == 'cm':
+			if self.unit_2 == 'm':
+				return cm_to_m(self.val)
 
-		elif self.unit_1 == 'cm' and self.unit_2 == 'inch':
-			return cm_to_inch(self.val)
+			elif self.unit_2 == 'km':
+				return cm_to_km(self.val)
 
-		elif self.unit_1 == 'm' and self.unit_2 == 'yd':
-			return m_to_yd(self.val)
+			elif self.unit_2 == 'inch':
+				return cm_to_inch(self.val)
 
-		elif self.unit_1 == 'yd' and self.unit_2 == 'm':
-			return yd_to_m(self.val)
+			elif self.unit_2 == 'yd':
+				return m_to_yd(cm_to_m(self.val))
 
-		elif self.unit_1 == 'mile' and self.unit_2 == 'km':
-			return mile_to_km(self.val)
+			elif self.unit_2 == 'mile':
+				return km_to_mile(cm_to_km(self.val))
 
-		elif self.unit_1 == 'km' and self.unit_2 == 'mile':
-			return km_to_mile(self.val)
+			else:
+				return self.val
+
+		# first dropdown is metres
+		elif self.unit_1 == 'm':
+			if self.unit_2 == 'cm':
+				return m_to_cm(self.val)
+
+			elif self.unit_2 == 'km':
+				return m_to_km(self.val)
+
+			elif self.unit_2 == 'inch':
+				return cm_to_inch(m_to_cm(self.val))
+
+			elif self.unit_2 == 'yd':
+				return m_to_yd(self.val)
+
+			elif self.unit_2 == 'mile':
+				return km_to_mile(m_to_km(self.val))
+
+			else:
+				return self.val
+
+		# first dropdown is kilometres
+		elif self.unit_1 == 'km':
+			if self.unit_2 == 'cm':
+				return km_to_cm(self.val)
+
+			elif self.unit_2 == 'm':
+				return km_to_m(self.val)
+
+			elif self.unit_2 == 'inch':
+				return cm_to_inch(km_to_cm(self.val))
+
+			elif self.unit_2 == 'yd':
+				return m_to_yd(km_to_m(self.val))
+
+			elif self.unit_2 == 'mile':
+				return km_to_mile(self.val)
+
+			else:
+				return self.val
+
+		# first dropdown is inches
+		elif self.unit_1 == 'inch':
+			if self.unit_2 == 'cm':
+				return inch_to_cm(self.val)
+
+			elif self.unit_2 == 'm':
+				return cm_to_m(inch_to_cm(self.val))
+
+			elif self.unit_2 == 'km':
+				return cm_to_km(inch_to_cm(self.val))
+
+			elif self.unit_2 == 'yd':
+				return m_to_yd(cm_to_m(inch_to_cm(self.val)))
+
+			elif self.unit_2 == 'mile':
+				return km_to_mile(cm_to_km(inch_to_cm(self.val)))
+
+			else:
+				return self.val
+
+		# first dropdown is yards
+		elif self.unit_1 == 'yd':
+			if self.unit_2 == 'cm':
+				return m_to_cm(yd_to_m(self.val))
+
+			elif self.unit_2 == 'm':
+				return yd_to_m(self.val)
+
+			elif self.unit_2 == 'km':
+				return m_to_km(yd_to_m(self.val))
+
+			elif self.unit_2 == 'inch':
+				return cm_to_inch(m_to_cm(yd_to_m(self.val)))
+
+			elif self.unit_2 == 'mile':
+				return km_to_mile(m_to_km(yd_to_m(self.val)))
+
+			else:
+				return self.val
+
+		# first dropdown is miles
+		elif self.unit_1 == 'mile':
+			if self.unit_2 == 'cm':
+				return km_to_cm(mile_to_km(self.val))
+
+			elif self.unit_2 == 'm':
+				return km_to_m(mile_to_km(self.val))
+
+			elif self.unit_2 == 'km':
+				return mile_to_km(self.val)
+
+			elif self.unit_2 == 'inch':
+				return cm_to_inch(km_to_cm(mile_to_km(self.val)))
+
+			elif self.unit_2 == 'yd':
+				return m_to_yd(km_to_m(mile_to_km(self.val)))
+
+			else:
+				return self.val
 
 		else:
 			return self.val
@@ -224,6 +345,9 @@ class speed(main_units):
 			else:
 				return self.val
 
+		else:
+			return self.val
+
 class temperature(main_units):
 	def convert(self):
 
@@ -256,6 +380,9 @@ class temperature(main_units):
 
 			else:
 				return self.val
+
+		else:
+			return self.val
 
 class currency(main_units):
 	# empty dict to store the conversion rates
@@ -314,6 +441,9 @@ def return_to_prev_screen(prev_screen, curr_screen):
 	elif prev_screen == 'mass':
 		return 'mass', prev_screen, curr_screen
 
+	elif prev_screen == 'length':
+		return 'length', prev_screen, curr_screen
+
 # run window/screen based on user's choices
 def screen_to_run(wdw, prev_screen, curr_screen):
 
@@ -329,6 +459,9 @@ def screen_to_run(wdw, prev_screen, curr_screen):
 
 	elif wdw == 'mass':
 		return mass_wdw(prev_screen, curr_screen)
+
+	elif wdw == 'length':
+		return length_wdw(prev_screen, curr_screen)
 
 	elif wdw == 'return_to_prev_screen':
 		return return_to_prev_screen(prev_screen, curr_screen)
@@ -654,10 +787,7 @@ def mass_wdw(prev_screen, curr_screen):
 							user_text = '0'
 							converter = mass(float(user_text), curr_opt_1, curr_opt_2)
 
-						# TODO: MAKE SURE NO ERROR WHEN KG AND KG CONVERSION \
-						# ROUND ALL TO 2 D.P
-
-						comp_text = str(round(converter.convert(), 2))
+						comp_text = str(round(converter.convert(), 5))
 						out_box.set_allowed_characters(
 						['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '.'])
 						out_box.set_text(comp_text)
@@ -698,7 +828,151 @@ def mass_wdw(prev_screen, curr_screen):
 
 # length conversion window / screen
 def length_wdw(prev_screen, curr_screen):
-	pass
+
+	prev_screen = curr_screen
+	curr_screen = 'length'
+
+	# set window + clear screen
+	display_size = (800, 800)
+	display = pygame.display.set_mode(display_size, 0, 32)
+	pygame.display.set_caption('Length')
+	manager = pygame_gui.UIManager(display_size, 'themes/button_themes.json')
+	manager_dd = pygame_gui.UIManager(display_size, 'themes/dropdown_menu_themes.json')
+	display.fill(dark_orange)
+
+	user_text = ''
+	# input space for user to enter numbers to be converted
+	inp_box = pygame_gui.elements.UITextEntryLine(
+	relative_rect = pygame.Rect((50, 250), (250, 50)),
+	manager = manager, object_id = '#input_boxes')
+
+	comp_text = ''
+	# output space where converted number is shown
+	out_box = pygame_gui.elements.UITextEntryLine(
+	relative_rect = pygame.Rect((480, 250), (250, 50)),
+	manager = manager, object_id = '#output_boxes')
+
+	# conversion from
+	curr_opt_1 = 'cm'
+	opt_1_dd = pygame_gui.elements.UIDropDownMenu(
+	options_list = ['centimetres', 'metres', 'kilometres', 'inches', 'yards', \
+	'miles'], starting_option = 'centimetres', relative_rect = \
+	pygame.Rect((50, 325), (270, 75)), manager = manager_dd)
+
+	# conversion to
+	curr_opt_2 = 'm'
+	opt_2_dd = pygame_gui.elements.UIDropDownMenu(
+	options_list = ['centimetres', 'metres', 'kilometres', 'inches', 'yards', \
+	'miles'], starting_option = 'centimetres', relative_rect = \
+	pygame.Rect((480, 325), (270, 75)), manager = manager_dd)
+
+	# convert button clicked in order to conver
+	convert_btn = pygame_gui.elements.UIButton(
+	relative_rect = pygame.Rect((325, 150), (130, 60)),
+	text = 'Convert', manager = manager, object_id = '#convert')
+
+	inp_box.set_allowed_characters(
+	['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '.'])
+	out_box.set_allowed_characters([])
+
+	while True:
+
+		# get curr_opt_1 in abbreviated for to use for conversion
+		if opt_1_dd.selected_option == 'centimetres':
+			curr_opt_1 = 'cm'
+		elif opt_1_dd.selected_option == 'metres':
+			curr_opt_1 = 'm'
+		elif opt_1_dd.selected_option == 'kilometres':
+			curr_opt_1 = 'km'
+		elif opt_1_dd.selected_option == 'inches':
+			curr_opt_1 = 'inch'
+		elif opt_1_dd.selected_option == 'yards':
+			curr_opt_1 = 'yd'
+		elif opt_1_dd.selected_option == 'miles':
+			curr_opt_1 = 'mile'
+		else:
+			pass
+
+		# get curr_opt_2 in abbreviated for to use for conversion
+		if opt_2_dd.selected_option == 'centimetres':
+			curr_opt_2 = 'cm'
+		elif opt_2_dd.selected_option == 'metres':
+			curr_opt_2 = 'm'
+		elif opt_2_dd.selected_option == 'kilometres':
+			curr_opt_2 = 'km'
+		elif opt_2_dd.selected_option == 'inches':
+			curr_opt_2 = 'inch'
+		elif opt_2_dd.selected_option == 'yards':
+			curr_opt_2 = 'yd'
+		elif opt_2_dd.selected_option == 'miles':
+			curr_opt_2 = 'mile'
+		else:
+			pass
+
+		# don't load faster than needed
+		clock.tick(60) / 1000
+		time_delta = clock.tick(60) / 1000
+
+		# red x on top left of every window = quit
+		for event in pygame.event.get():
+
+			if event.type == pygame.QUIT:
+				return False
+
+			if event.type == pygame.USEREVENT:
+				# where to go when buttons clicked
+				if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
+
+					# convert and display
+					if event.ui_element == convert_btn:
+
+						out_box.set_text('')
+						user_text = inp_box.get_text()
+
+						try:
+							converter = length(float(user_text), curr_opt_1, curr_opt_2)
+						except ValueError:
+							user_text = '0'
+							converter = length(float(user_text), curr_opt_1, curr_opt_2)
+
+						comp_text = str(round(converter.convert(), 5))
+						out_box.set_allowed_characters(
+						['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '.'])
+						out_box.set_text(comp_text)
+						out_box.set_allowed_characters([])
+
+					if event.ui_element == inp_box:
+						user_text = inp_box.get_text()
+
+			if event.type == pygame.KEYDOWN:
+
+				# press escape to quit
+				if event.key == pygame.K_ESCAPE:
+					return False
+
+				# press i to see instructions
+				if event.key == pygame.K_i:
+					return 'instructions', prev_screen, curr_screen
+
+				# press p to go to previous screen/window
+				if event.key == pygame.K_p:
+					return 'return_to_prev_screen', prev_screen, curr_screen
+
+				if event.key == pygame.K_m:
+					return 'intro', prev_screen, curr_screen
+
+			manager.process_events(event)
+			manager_dd.process_events(event)
+		manager.update(time_delta)
+		manager_dd.update(time_delta)
+
+		# don't let previous end of input_rect show
+		display.fill(dark_orange)
+
+		display.blit(background, (0, 0))
+		manager.draw_ui(display)
+		manager_dd.draw_ui(display)
+		pygame.display.flip()
 
 # speed conversion window / screen
 def speed_wdw(prev_screen, curr_screen):
