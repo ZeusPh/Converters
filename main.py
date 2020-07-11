@@ -144,6 +144,9 @@ class mass(main_units):
 			elif self.unit_2 == 'st':
 				return lb_to_st(self.val)
 
+			else:
+				return self.val
+
 		elif self.unit_1 == 'kg':
 			if self.unit_2 == 'lb':
 				return kg_to_lb(self.val)
@@ -151,12 +154,18 @@ class mass(main_units):
 			elif self.unit_2 == 'st':
 				return kg_to_st(self.val)
 
+			else:
+				return self.val
+
 		else:
 			if self.unit_2 == 'lb':
 				return st_to_lb(self.val)
 
 			elif self.unit_2 == 'kg':
 				return st_to_kg(self.val)
+
+			else:
+				return self.val
 
 class length(main_units):
 	def convert(self):
@@ -179,6 +188,9 @@ class length(main_units):
 		elif self.unit_1 == 'km' and self.unit_2 == 'mile':
 			return km_to_mile(self.val)
 
+		else:
+			return self.val
+
 class speed(main_units):
 	def convert(self):
 
@@ -189,6 +201,9 @@ class speed(main_units):
 			elif self.unit_2 == 'kts':
 				return mph_to_kts(self.val)
 
+			else:
+				return self.val
+
 		elif self.unit_1 == 'kmph':
 			if self.unit_2 == 'mph':
 				return km_to_mile(self.val)
@@ -196,12 +211,18 @@ class speed(main_units):
 			elif self.unit_2 == 'kts':
 				return kmph_to_kts(self.val)
 
+			else:
+				return self.val
+
 		elif self.unit_1 == 'kts':
 			if self.unit_2 == 'mph':
 				return kts_to_mph(self.val)
 
 			elif self.unit_2 == 'kmph':
 				return kts_to_kmph(self.val)
+
+			else:
+				return self.val
 
 class temperature(main_units):
 	def convert(self):
@@ -213,6 +234,9 @@ class temperature(main_units):
 			elif self.unit_2 == 'k':
 				return c_to_k(self.val)
 
+			else:
+				return self.val
+
 		elif self.unit_1 == 'f':
 			if self.unit_2 == 'c':
 				return f_to_c(self.val)
@@ -220,12 +244,18 @@ class temperature(main_units):
 			elif self.unit_2 == 'k':
 				return f_to_k(self.val)
 
+			else:
+				return self.val
+
 		elif self.unit_1 == 'k':
 			if self.unit_2 == 'c':
 				return k_to_c(self.val)
 
 			elif self.unit_2 == 'f':
 				return k_to_f(self.val)
+
+			else:
+				return self.val
 
 class currency(main_units):
 	# empty dict to store the conversion rates
@@ -611,6 +641,28 @@ def mass_wdw(prev_screen, curr_screen):
 			if event.type == pygame.USEREVENT:
 				# where to go when buttons clicked
 				if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
+
+					# convert and display
+					if event.ui_element == convert_btn:
+
+						out_box.set_text('')
+						user_text = inp_box.get_text()
+
+						try:
+							converter = mass(float(user_text), curr_opt_1, curr_opt_2)
+						except ValueError:
+							user_text = '0'
+							converter = mass(float(user_text), curr_opt_1, curr_opt_2)
+
+						# TODO: MAKE SURE NO ERROR WHEN KG AND KG CONVERSION \
+						# ROUND ALL TO 2 D.P
+
+						comp_text = str(round(converter.convert(), 2))
+						out_box.set_allowed_characters(
+						['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '.'])
+						out_box.set_text(comp_text)
+						out_box.set_allowed_characters([])
+
 					if event.ui_element == inp_box:
 						user_text = inp_box.get_text()
 
@@ -630,31 +682,6 @@ def mass_wdw(prev_screen, curr_screen):
 
 				if event.key == pygame.K_m:
 					return 'intro', prev_screen, curr_screen
-
-			if event.type == pygame.USEREVENT:
-				# where to go when buttons clicked
-				if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
-
-					# convert and display
-					if event.ui_element == convert_btn:
-
-						out_box.set_text('')
-						user_text = inp_box.get_text()
-
-						try:
-							converter = mass(float(user_text), curr_opt_1, curr_opt_2)
-						except ValueError:
-							user_text = '0'
-							converter = mass(float(user_text), curr_opt_1, curr_opt_2)
-
-						# TODO: MAKE SURE NO ERROR WHEN KG AND KG CONVERSION \
-						# ROUND ALL TO 2 D.P
-
-						comp_text = str(converter.convert())
-						out_box.set_allowed_characters(
-						['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'])
-						out_box.set_text(comp_text)
-						out_box.set_allowed_characters([])
 
 			manager.process_events(event)
 			manager_dd.process_events(event)
