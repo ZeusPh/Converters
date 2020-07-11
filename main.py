@@ -398,21 +398,6 @@ class currency(main_units):
 		amount = round(amount * self.rates[to_currency.upper()], 2)
 		return amount
 
-# # how to use the class mass-temp to convert:
-# my_val_mass = 34
-# my_1_mass = 'st'
-# my_2_mass = 'kg'
-# x = mass(my_val_mass, my_1_mass, my_2_mass)
-# print(x.convert())
-
-# # how to use the class currency to convert:
-# # Driver code
-# if __name__ == "__main__":
-# 	# Use API from fixer.io w/ requests
-# 	url = str.__add__('http://data.fixer.io/api/latest?access_key=', APIs.fixer_API)
-# 	c = currency(url)
-# 	print(c.convert(100, 'usd', 'aed'))
-
 # main pygame code
 # quickly create objects (rects)
 def text_objects(text, font, colour):
@@ -444,6 +429,9 @@ def return_to_prev_screen(prev_screen, curr_screen):
 	elif prev_screen == 'temp':
 		return 'temp', prev_screen, curr_screen
 
+	elif prev_screen == 'currency':
+		return 'currency', prev_screen, curr_screen
+
 # run window/screen based on user's choices
 def screen_to_run(wdw, prev_screen, curr_screen):
 
@@ -468,6 +456,9 @@ def screen_to_run(wdw, prev_screen, curr_screen):
 
 	elif wdw == 'temp':
 		return temp_wdw(prev_screen, curr_screen)
+
+	elif wdw == 'currency':
+		return currency_wdw(prev_screen, curr_screen)
 
 	elif wdw == 'return_to_prev_screen':
 		return return_to_prev_screen(prev_screen, curr_screen)
@@ -1254,7 +1245,127 @@ def temp_wdw(prev_screen, curr_screen):
 
 # currency conversion window / screen
 def currency_wdw(prev_screen, curr_screen):
-	pass
+
+	prev_screen = curr_screen
+	curr_screen = 'currency'
+
+	# set window + clear screen
+	display_size = (800, 800)
+	display = pygame.display.set_mode(display_size, 0, 32)
+	pygame.display.set_caption('Currency')
+	manager = pygame_gui.UIManager(display_size, 'themes/button_themes.json')
+	manager_dd = pygame_gui.UIManager(display_size, 'themes/dropdown_menu_themes.json')
+	display.fill(dark_orange)
+
+	user_text = ''
+	# input space for user to enter numbers to be converted
+	inp_box = pygame_gui.elements.UITextEntryLine(
+	relative_rect = pygame.Rect((50, 250), (250, 50)),
+	manager = manager, object_id = '#input_boxes')
+
+	comp_text = ''
+	# output space where converted number is shown
+	out_box = pygame_gui.elements.UITextEntryLine(
+	relative_rect = pygame.Rect((480, 250), (250, 50)),
+	manager = manager, object_id = '#output_boxes')
+
+	# conversion from
+	curr_opt_1 = 'aed'
+	opt_1_dd = pygame_gui.elements.UIDropDownMenu(
+	options_list = ['AED', 'USD', 'GBP'], starting_option = \
+	'AED', relative_rect = pygame.Rect((50, 325), (270, 75)),
+	manager = manager_dd)
+
+	# conversion to
+	curr_opt_2 = 'usd'
+	opt_2_dd = pygame_gui.elements.UIDropDownMenu(
+	options_list = ['AED', 'USD', 'GBP'], starting_option = \
+	'USD', relative_rect = pygame.Rect((480, 325), (270, 75)),
+	manager = manager_dd)
+
+	# convert button clicked in order to conver
+	convert_btn = pygame_gui.elements.UIButton(
+	relative_rect = pygame.Rect((325, 150), (130, 60)),
+	text = 'Convert', manager = manager, object_id = '#convert')
+
+	inp_box.set_allowed_characters(
+	['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '.', '-'])
+	out_box.set_allowed_characters([])
+
+	while True:
+
+		# get curr_opt_1 in abbreviated for to use for conversion
+		curr_opt_1 = opt_1_dd.selected_option.lower()
+
+		# get curr_opt_2 in abbreviated for to use for conversion
+		curr_opt_2 = opt_2_dd.selected_option.lower()
+
+		# don't load faster than needed
+		clock.tick(60) / 1000
+		time_delta = clock.tick(60) / 1000
+
+		# red x on top left of every window = quit
+		for event in pygame.event.get():
+
+			if event.type == pygame.QUIT:
+				return False
+
+			if event.type == pygame.USEREVENT:
+				# where to go when buttons clicked
+				if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
+
+					# convert and display
+					if event.ui_element == convert_btn:
+
+						out_box.set_text('')
+						user_text = inp_box.get_text()
+
+						url = str.__add__('http://data.fixer.io/api/latest?access_key=', APIs.fixer_API)
+
+						try:
+							converter = currency(url)
+						except ValueError:
+							user_text = '0'
+							converter = currency(url)
+
+						comp_text = str(converter.convert(float(user_text), curr_opt_1, curr_opt_2))
+						out_box.set_allowed_characters(
+						['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '.', '-'])
+						out_box.set_text(comp_text)
+						out_box.set_allowed_characters([])
+
+					if event.ui_element == inp_box:
+						user_text = inp_box.get_text()
+
+			if event.type == pygame.KEYDOWN:
+
+				# press escape to quit
+				if event.key == pygame.K_ESCAPE:
+					return False
+
+				# press i to see instructions
+				if event.key == pygame.K_i:
+					return 'instructions', prev_screen, curr_screen
+
+				# press p to go to previous screen/window
+				if event.key == pygame.K_p:
+					return 'return_to_prev_screen', prev_screen, curr_screen
+
+				if event.key == pygame.K_m:
+					return 'intro', prev_screen, curr_screen
+
+			manager.process_events(event)
+			manager_dd.process_events(event)
+		manager.update(time_delta)
+		manager_dd.update(time_delta)
+
+		# don't let previous end of input_rect show
+		display.fill(dark_orange)
+
+		display.blit(background, (0, 0))
+		manager.draw_ui(display)
+		manager_dd.draw_ui(display)
+		pygame.display.flip()
 
 # calendar conversion window / screen
 def cal_wdw(prev_screen, curr_screen):
