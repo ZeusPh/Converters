@@ -153,6 +153,7 @@ class main_units:
 		self.unit_2 = unit_2
 
 # sub-classes of parent-class - 6 initial options of what to convert
+# take options and choose conversion function, convert and then return
 class mass(main_units):
 	def convert(self):
 
@@ -398,6 +399,10 @@ class currency(main_units):
 		amount = round(amount * self.rates[to_currency.upper()], 2)
 		return amount
 
+class calendar(main_units):
+	def convert(self):
+		pass
+
 # main pygame code
 # quickly create objects (rects)
 def text_objects(text, font, colour):
@@ -405,7 +410,7 @@ def text_objects(text, font, colour):
 	text_surf = font.render(text, True, colour)
 	return text_surf, text_surf.get_rect()
 
-# used to go back to previous window/screen when p clicked
+# go back to previous window/screen when p pressed on keyboard
 def return_to_prev_screen(prev_screen, curr_screen):
 
 	if prev_screen is None:
@@ -431,6 +436,12 @@ def return_to_prev_screen(prev_screen, curr_screen):
 
 	elif prev_screen == 'currency':
 		return 'currency', prev_screen, curr_screen
+
+	elif prev_screen == 'cal':
+		return 'cal', prev_screen, curr_screen
+
+	else:
+		return 'intro', prev_screen, curr_screen
 
 # run window/screen based on user's choices
 def screen_to_run(wdw, prev_screen, curr_screen):
@@ -460,8 +471,14 @@ def screen_to_run(wdw, prev_screen, curr_screen):
 	elif wdw == 'currency':
 		return currency_wdw(prev_screen, curr_screen)
 
+	elif wdw == 'cal':
+		return cal_wdw(prev_screen, curr_screen)
+
 	elif wdw == 'return_to_prev_screen':
 		return return_to_prev_screen(prev_screen, curr_screen)
+
+	else:
+		return introduction(prev_screen, curr_screen)
 
 	return wdw, prev_screen, curr_screen
 
@@ -1369,7 +1386,169 @@ def currency_wdw(prev_screen, curr_screen):
 
 # calendar conversion window / screen
 def cal_wdw(prev_screen, curr_screen):
-	pass
+
+	prev_screen = curr_screen
+	curr_screen = 'cal'
+
+	# set window + clear screen
+	display_size = (800, 800)
+	display = pygame.display.set_mode(display_size, 0, 32)
+	pygame.display.set_caption('Calendar')
+	manager = pygame_gui.UIManager(display_size, 'themes/button_themes.json')
+	manager_dd = pygame_gui.UIManager(display_size, 'themes/dropdown_menu_themes.json')
+	display.fill(dark_orange)
+
+	# conversion from
+	curr_opt_1 = 'gregorian'
+	opt_1_dd = pygame_gui.elements.UIDropDownMenu(
+	options_list = ['gregorian', 'julian'], starting_option = \
+	'gregorian', relative_rect = pygame.Rect((18, 10), (270, 75)),
+	manager = manager_dd)
+
+	# Day number (1 - 31)
+	title_text_font = pygame.font.Font('fonts/Montserrat-Bold.ttf', 30)
+	text_surf_day, text_rect_day = text_objects('Day No. (1 - 31)', title_text_font, black)
+	text_rect_day.center = (130, 145)
+	# Day input
+	day_number_text = ''
+	day_number_box = pygame_gui.elements.UITextEntryLine(
+	relative_rect = pygame.Rect((17, 180), (220, 50)),
+	manager = manager, object_id = '#input_boxes')
+
+	# Month
+	text_surf_month, text_rect_month = text_objects('Month (1 - 12)', title_text_font, black)
+	text_rect_month.center = (390, 145)
+	# Month input
+	month_text = 'Jan'
+	month_number_text = ''
+	month_number_box = pygame_gui.elements.UITextEntryLine(
+	relative_rect = pygame.Rect((282, 180), (220, 50)),
+	manager = manager, object_id = '#input_boxes')
+
+	# Year
+	text_surf_year, text_rect_year = text_objects('Year', title_text_font, black)
+	text_rect_year.center = (655, 145)
+	# Year input
+	year_text = ''
+	year_box = pygame_gui.elements.UITextEntryLine(
+	relative_rect = pygame.Rect((550, 180), (220, 50)),
+	manager = manager, object_id = '#input_boxes')
+
+	# conversion to
+	curr_opt_2 = 'julian'
+	opt_2_dd = pygame_gui.elements.UIDropDownMenu(
+	options_list = ['gregorian', 'julian'], starting_option = \
+	'julian', relative_rect = pygame.Rect((18, 385), (270, 75)),
+	manager = manager_dd)
+
+	# Day number (1 - 31) 2
+	text_surf_day_2, text_rect_day_2 = text_objects('Day No. (1 - 31)', title_text_font, black)
+	text_rect_day_2.center = (130, 520)
+	# Day input 2
+	day_number_text_2 = ''
+	day_number_box_2 = pygame_gui.elements.UITextEntryLine(
+	relative_rect = pygame.Rect((17, 555), (220, 50)),
+	manager = manager, object_id = '#input_boxes')
+
+	# Month number (1 - 12) 2
+	text_surf_month_2, text_rect_month_2 = text_objects('Month (1 - 12)', title_text_font, black)
+	text_rect_month_2.center = (390, 520)
+	# Month input 2
+	month_text_2 = 'Jan'
+	month_number_text_2 = ''
+	month_number_box_2 = pygame_gui.elements.UITextEntryLine(
+	relative_rect = pygame.Rect((282, 555), (220, 50)),
+	manager = manager, object_id = '#input_boxes')
+
+	# Year 2
+	text_surf_year_2, text_rect_year_2 = text_objects('Year', title_text_font, black)
+	text_rect_year_2.center = (655, 520)
+	# Year input 2
+	year_text_2 = ''
+	year_box_2 = pygame_gui.elements.UITextEntryLine(
+	relative_rect = pygame.Rect((550, 555), (220, 50)),
+	manager = manager, object_id = '#input_boxes')
+
+	# convert button clicked in order to conver
+	convert_btn = pygame_gui.elements.UIButton(
+	relative_rect = pygame.Rect((18, 280), (130, 60)),
+	text = 'Convert', manager = manager, object_id = '#convert')
+
+	while True:
+
+		# don't load faster than needed
+		clock.tick(60) / 1000
+		time_delta = clock.tick(60) / 1000
+
+		# red x on top left of every window = quit
+		for event in pygame.event.get():
+
+			if event.type == pygame.QUIT:
+				return False
+
+			if event.type == pygame.USEREVENT:
+				# where to go when buttons clicked
+				if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
+
+					# convert and display
+					if event.ui_element == convert_btn:
+
+						# 	out_box.set_text('')
+						# 	user_text = inp_box.get_text()
+
+						# 	try:
+						# 		converter = temperature(float(user_text), curr_opt_1, curr_opt_2)
+						# 	except ValueError:
+						# 		user_text = '0'
+						# 		converter = temperature(float(user_text), curr_opt_1, curr_opt_2)
+
+						# 	comp_text = str(round(converter.convert(), 5))
+						# 	out_box.set_allowed_characters(
+						# 	['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '.', '-'])
+						# 	out_box.set_text(comp_text)
+						# 	out_box.set_allowed_characters([])
+
+						# if event.ui_element == inp_box:
+						# 	user_text = inp_box.get_text()
+
+						pass
+
+			if event.type == pygame.KEYDOWN:
+
+				# press escape to quit
+				if event.key == pygame.K_ESCAPE:
+					return False
+
+				# press i to see instructions
+				if event.key == pygame.K_i:
+					return 'instructions', prev_screen, curr_screen
+
+				# press p to go to previous screen/window
+				if event.key == pygame.K_p:
+					return 'return_to_prev_screen', prev_screen, curr_screen
+
+				if event.key == pygame.K_m:
+					return 'intro', prev_screen, curr_screen
+
+			manager.process_events(event)
+			manager_dd.process_events(event)
+		manager.update(time_delta)
+		manager_dd.update(time_delta)
+
+		# don't let previous end of input_rect show
+		display.fill(dark_orange)
+
+		display.blit(text_surf_day, text_rect_day)
+		display.blit(text_surf_month, text_rect_month)
+		display.blit(text_surf_year, text_rect_year)
+		display.blit(text_surf_day_2, text_rect_day_2)
+		display.blit(text_surf_month_2, text_rect_month_2)
+		display.blit(text_surf_year_2, text_rect_year_2)
+		display.blit(background, (0, 0))
+
+		manager.draw_ui(display)
+		manager_dd.draw_ui(display)
+		pygame.display.flip()
 
 
 # used to choose which screen to run
