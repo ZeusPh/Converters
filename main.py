@@ -151,12 +151,12 @@ def k_to_f(val):
 def gregorian_to_julian(day, month, year):
 	final_tuple = jd2jcal(*gcal2jd(year, month, day))
 	# as day, month, year
-	return final_tuple[0], final_tuple[2], final_tuple[1]
+	return final_tuple[2], final_tuple[1], final_tuple[0]
 
 def julian_to_gregorian(day, month, year):
 	final_tuple = jd2gcal(*jcal2jd(year, month, day))
 	# as day, month, year
-	return final_tuple[0], final_tuple[2], final_tuple[1]
+	return final_tuple[2], final_tuple[1], final_tuple[0]
 
 # parent-class
 class main_units:
@@ -422,10 +422,16 @@ class calendar():
 	def convert(self):
 
 		if self.unit_1 == 'gregorian':
-			return gregorian_to_julian(self.dates[0], self.dates[1], self.dates[2])
+			if self.unit_2 == 'julian':
+				return gregorian_to_julian(self.dates[0], self.dates[1], self.dates[2])
+			else:
+				return self.dates[0], self.dates[1], self.dates[2]
 
 		elif self.unit_1 == 'julian':
-			return julian_to_gregorian(self.dates[0], self.dates[1], self.dates[2])
+			if self.unit_2 == 'gregorian':
+				return julian_to_gregorian(self.dates[0], self.dates[1], self.dates[2])
+			else:
+				return self.dates[0], self.dates[1], self.dates[2]
 
 		else:
 			return self.dates[0], self.dates[1], self.dates[2]
@@ -1501,7 +1507,41 @@ def cal_wdw(prev_screen, curr_screen):
 	relative_rect = pygame.Rect((18, 280), (130, 60)),
 	text = 'Convert', manager = manager, object_id = '#convert')
 
+	numbers_list = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0']
+
+	# only allowed to enter numbers - dates
+	day_number_box.set_allowed_characters(numbers_list)
+	month_number_box.set_allowed_characters(numbers_list)
+	year_box.set_allowed_characters(numbers_list)
+
+	day_number_box_2.set_allowed_characters([])
+	month_number_box_2.set_allowed_characters([])
+	year_box_2.set_allowed_characters([])
+
+	# can't enter more than 2 ints
+	day_number_box.set_text_length_limit(2)
+	month_number_box.set_text_length_limit(2)
+
+	day_number_box_2.set_text_length_limit(2)
+	month_number_box_2.set_text_length_limit(2)
+
 	while True:
+
+		# get curr_opt_1 for to use for conversion
+		if opt_1_dd.selected_option == 'julian':
+			curr_opt_1 = 'julian'
+		elif opt_1_dd.selected_option == 'gregorian':
+			curr_opt_1 = 'gregorian'
+		else:
+			pass
+
+		# get curr_opt_2 to use for conversion
+		if opt_2_dd.selected_option == 'julian':
+			curr_opt_2 = 'julian'
+		elif opt_2_dd.selected_option == 'gregorian':
+			curr_opt_2 = 'gregorian'
+		else:
+			pass
 
 		# don't load faster than needed
 		clock.tick(60) / 1000
@@ -1520,25 +1560,28 @@ def cal_wdw(prev_screen, curr_screen):
 					# convert and display
 					if event.ui_element == convert_btn:
 
-						# 	out_box.set_text('')
-						# 	user_text = inp_box.get_text()
+						day_number_box_2.set_text('')
+						month_number_box_2.set_text('')
+						year_box_2.set_text('')
 
-						# 	try:
-						# 		converter = temperature(float(user_text), curr_opt_1, curr_opt_2)
-						# 	except ValueError:
-						# 		user_text = '0'
-						# 		converter = temperature(float(user_text), curr_opt_1, curr_opt_2)
+						dates_list = [day_number_box.get_text(), \
+						month_number_box.get_text(), year_box.get_text()]
 
-						# 	comp_text = str(round(converter.convert(), 5))
-						# 	out_box.set_allowed_characters(
-						# 	['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '.', '-'])
-						# 	out_box.set_text(comp_text)
-						# 	out_box.set_allowed_characters([])
+						converter = calendar(curr_opt_1, curr_opt_2, dates_list)
 
-						# if event.ui_element == inp_box:
-						# 	user_text = inp_box.get_text()
+						dates_list_2 = converter.convert()
 
-						pass
+						day_number_box_2.set_allowed_characters(numbers_list)
+						month_number_box_2.set_allowed_characters(numbers_list)
+						year_box_2.set_allowed_characters(numbers_list)
+
+						day_number_box_2.set_text(str(dates_list_2[0]))
+						month_number_box_2.set_text(str(dates_list_2[1]))
+						year_box_2.set_text(str(dates_list_2[2]))
+
+						day_number_box_2.set_allowed_characters([])
+						month_number_box_2.set_allowed_characters([])
+						year_box_2.set_allowed_characters([])
 
 			if event.type == pygame.KEYDOWN:
 
