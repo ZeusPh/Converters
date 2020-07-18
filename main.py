@@ -1,13 +1,16 @@
 # made by: Raghav
 
-# all libraries
+# basic pygame modules
 import pygame
 from pygame.locals import *
 import sys
 import pygame_gui
+# for currency conversion
 import requests
 # file not included on github - refer to README
 import APIs
+# for calendar conversion
+from jdcal import gcal2jd, jd2gcal, jd2jcal, jcal2jd
 
 # all colours
 black = (0, 0, 0)
@@ -144,6 +147,17 @@ def f_to_k(val):
 def k_to_f(val):
 	return c_to_f(k_to_c(val))
 
+# gregorian and julian
+def gregorian_to_julian(day, month, year):
+	final_tuple = jd2jcal(*gcal2jd(year, month, day))
+	# as day, month, year
+	return final_tuple[0], final_tuple[2], final_tuple[1]
+
+def julian_to_gregorian(day, month, year):
+	final_tuple = jd2gcal(*jcal2jd(year, month, day))
+	# as day, month, year
+	return final_tuple[0], final_tuple[2], final_tuple[1]
+
 # parent-class
 class main_units:
 	# val - value to convert, unit_1 - convert from, unit_2 - convert to
@@ -152,7 +166,7 @@ class main_units:
 		self.unit_1 = unit_1
 		self.unit_2 = unit_2
 
-# sub-classes of parent-class - 6 initial options of what to convert
+# 5 sub-classes of parent-class (main_units)
 # take options and choose conversion function, convert and then return
 class mass(main_units):
 	def convert(self):
@@ -399,9 +413,22 @@ class currency(main_units):
 		amount = round(amount * self.rates[to_currency.upper()], 2)
 		return amount
 
-class calendar(main_units):
+class calendar():
+	def __init__(self, unit_1, unit_2, dates):
+		self.unit_1 = unit_1
+		self.unit_2 = unit_2
+		self.dates = dates
+
 	def convert(self):
-		pass
+
+		if self.unit_1 == 'gregorian':
+			return gregorian_to_julian(self.dates[0], self.dates[1], self.dates[2])
+
+		elif self.unit_1 == 'julian':
+			return julian_to_gregorian(self.dates[0], self.dates[1], self.dates[2])
+
+		else:
+			return self.dates[0], self.dates[1], self.dates[2]
 
 # main pygame code
 # quickly create objects (rects)
