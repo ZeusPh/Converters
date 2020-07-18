@@ -1,3 +1,4 @@
+# created: 21/6/2020
 # made by: Raghav
 
 # basic pygame modules
@@ -707,7 +708,7 @@ def instructions(prev_screen, curr_screen):
 		text_line_18 = text_line_font.render('appear on the right.', 1, white)
 		text_line_19 = text_line_font.render('REMEMBER:', 1, red)
 		text_line_20 = text_line_font.render('You MUST choose the value to '\
-		+ 'convert from on the LEFT!', 1, white)
+		+ 'convert FROM on the LEFT!', 1, white)
 
 		display.blit(background, (0, 0))
 
@@ -825,9 +826,12 @@ def mass_wdw(prev_screen, curr_screen):
 					# convert and display
 					if event.ui_element == convert_btn:
 
+						# clear output
 						out_box.set_text('')
+
 						user_text = inp_box.get_text()
 
+						# initialize
 						try:
 							converter = mass(float(user_text), curr_opt_1, curr_opt_2)
 						except ValueError:
@@ -835,9 +839,13 @@ def mass_wdw(prev_screen, curr_screen):
 							converter = mass(float(user_text), curr_opt_1, curr_opt_2)
 
 						comp_text = str(round(converter.convert(), 5))
+
+						# allow to show text
 						out_box.set_allowed_characters(
 						['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '.', '-'])
+						# put final conversion in output
 						out_box.set_text(comp_text)
+						# make output uneditable
 						out_box.set_allowed_characters([])
 
 					if event.ui_element == inp_box:
@@ -1547,6 +1555,29 @@ def cal_wdw(prev_screen, curr_screen):
 		clock.tick(60) / 1000
 		time_delta = clock.tick(60) / 1000
 
+		# month has to be between 1 and 12
+		try:
+			if int(month_number_box.get_text()) > 12 or int(month_number_box.get_text()) < 1:
+				month_number_box.set_text('')
+		except ValueError:
+			pass
+
+		# can't have more days than is actually in the month
+		try:
+			if int(month_number_box.get_text()) in [1, 3, 5, 7, 8, 10, 12]:
+				if int(day_number_box.get_text()) > 31 or int(day_number_box.get_text()) < 1:
+					day_number_box.set_text('')
+			elif int(month_number_box.get_text()) in [4, 6, 9, 11]:
+				if int(day_number_box.get_text()) > 30 or int(day_number_box.get_text()) < 1:
+					day_number_box.set_text('')
+			elif int(month_number_box.get_text()) == 2:
+				if int(day_number_box.get_text()) > 29 or int(day_number_box.get_text()) < 1:
+					day_number_box.set_text('')
+			else:
+				pass
+		except ValueError:
+			pass
+
 		# red x on top left of every window = quit
 		for event in pygame.event.get():
 
@@ -1560,6 +1591,7 @@ def cal_wdw(prev_screen, curr_screen):
 					# convert and display
 					if event.ui_element == convert_btn:
 
+						# clear output
 						day_number_box_2.set_text('')
 						month_number_box_2.set_text('')
 						year_box_2.set_text('')
@@ -1567,18 +1599,22 @@ def cal_wdw(prev_screen, curr_screen):
 						dates_list = [day_number_box.get_text(), \
 						month_number_box.get_text(), year_box.get_text()]
 
+						# initialize
 						converter = calendar(curr_opt_1, curr_opt_2, dates_list)
 
 						dates_list_2 = converter.convert()
 
+						# allow to show text
 						day_number_box_2.set_allowed_characters(numbers_list)
 						month_number_box_2.set_allowed_characters(numbers_list)
 						year_box_2.set_allowed_characters(numbers_list)
 
+						# put final conversion in output
 						day_number_box_2.set_text(str(dates_list_2[0]))
 						month_number_box_2.set_text(str(dates_list_2[1]))
 						year_box_2.set_text(str(dates_list_2[2]))
 
+						# make output uneditable
 						day_number_box_2.set_allowed_characters([])
 						month_number_box_2.set_allowed_characters([])
 						year_box_2.set_allowed_characters([])
@@ -1627,8 +1663,10 @@ user_wdw, user_prev, user_curr = True, prev_screen, curr_screen
 # driver code
 if __name__ == "__main__":
 
+	# first initialization - start on intro page
 	user_wdw, user_prev, user_curr = introduction(user_prev, user_curr)
 
+	# choose which screen to run as long as not quitting
 	while user_wdw is not False:
 		user_wdw, user_prev, user_curr = screen_to_run(user_wdw, user_prev, user_curr)
 
