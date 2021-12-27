@@ -1,5 +1,4 @@
-# created: 21/6/2020
-# made by: Raghav
+# made by: Raghav Awasthi
 
 # basic pygame modules
 import pygame
@@ -525,6 +524,7 @@ def introduction(prev_screen, curr_screen):
 	# set window + clear screen
 	display_size = (800, 800)
 	display = pygame.display.set_mode(display_size, 0, 32)
+	display.blit(background, (0, 0))
 	pygame.display.set_caption('Converters')
 	manager = pygame_gui.UIManager(display_size, 'themes/button_themes.json')
 
@@ -623,7 +623,6 @@ def introduction(prev_screen, curr_screen):
 			manager.process_events(event)
 		manager.update(time_delta)
 
-		display.blit(background, (0, 0))
 		manager.draw_ui(display)
 		pygame.display.flip()
 
@@ -636,6 +635,7 @@ def instructions(prev_screen, curr_screen):
 	# set window + clear screen
 	display_size = (800, 630)
 	display = pygame.display.set_mode(display_size, 0, 32)
+	display.blit(background, (0, 0))
 	pygame.display.set_caption('Instructions')
 	manager = pygame_gui.UIManager(display_size, 'themes/button_themes.json')
 
@@ -710,8 +710,6 @@ def instructions(prev_screen, curr_screen):
 		text_line_20 = text_line_font.render('You MUST choose the value to '\
 		+ 'convert FROM on the LEFT!', 1, white)
 
-		display.blit(background, (0, 0))
-
 		# put instructions on the screen
 		display.blit(text_line_0, (5, (27 * 0)))
 		display.blit(text_line_1, (5, (27 * 1)))
@@ -747,6 +745,7 @@ def mass_wdw(prev_screen, curr_screen):
 	# set window + clear screen
 	display_size = (800, 800)
 	display = pygame.display.set_mode(display_size, 0, 32)
+	display.blit(background, (0, 0))
 	pygame.display.set_caption('Mass')
 	manager = pygame_gui.UIManager(display_size, 'themes/button_themes.json')
 	manager_dd = pygame_gui.UIManager(display_size, 'themes/dropdown_menu_themes.json')
@@ -876,7 +875,6 @@ def mass_wdw(prev_screen, curr_screen):
 		# don't let previous end of input_rect show
 		display.fill(dark_orange)
 
-		display.blit(background, (0, 0))
 		manager.draw_ui(display)
 		manager_dd.draw_ui(display)
 		pygame.display.flip()
@@ -890,6 +888,7 @@ def length_wdw(prev_screen, curr_screen):
 	# set window + clear screen
 	display_size = (800, 800)
 	display = pygame.display.set_mode(display_size, 0, 32)
+	display.blit(background, (0, 0))
 	pygame.display.set_caption('Length')
 	manager = pygame_gui.UIManager(display_size, 'themes/button_themes.json')
 	manager_dd = pygame_gui.UIManager(display_size, 'themes/dropdown_menu_themes.json')
@@ -1024,7 +1023,6 @@ def length_wdw(prev_screen, curr_screen):
 		# don't let previous end of input_rect show
 		display.fill(dark_orange)
 
-		display.blit(background, (0, 0))
 		manager.draw_ui(display)
 		manager_dd.draw_ui(display)
 		pygame.display.flip()
@@ -1038,6 +1036,7 @@ def speed_wdw(prev_screen, curr_screen):
 	# set window + clear screen
 	display_size = (800, 800)
 	display = pygame.display.set_mode(display_size, 0, 32)
+	display.blit(background, (0, 0))
 	pygame.display.set_caption('Speed')
 	manager = pygame_gui.UIManager(display_size, 'themes/button_themes.json')
 	manager_dd = pygame_gui.UIManager(display_size, 'themes/dropdown_menu_themes.json')
@@ -1160,7 +1159,6 @@ def speed_wdw(prev_screen, curr_screen):
 		# don't let previous end of input_rect show
 		display.fill(dark_orange)
 
-		display.blit(background, (0, 0))
 		manager.draw_ui(display)
 		manager_dd.draw_ui(display)
 		pygame.display.flip()
@@ -1174,6 +1172,7 @@ def temp_wdw(prev_screen, curr_screen):
 	# set window + clear screen
 	display_size = (800, 800)
 	display = pygame.display.set_mode(display_size, 0, 32)
+	display.blit(background, (0, 0))
 	pygame.display.set_caption('Temperature')
 	manager = pygame_gui.UIManager(display_size, 'themes/button_themes.json')
 	manager_dd = pygame_gui.UIManager(display_size, 'themes/dropdown_menu_themes.json')
@@ -1296,7 +1295,6 @@ def temp_wdw(prev_screen, curr_screen):
 		# don't let previous end of input_rect show
 		display.fill(dark_orange)
 
-		display.blit(background, (0, 0))
 		manager.draw_ui(display)
 		manager_dd.draw_ui(display)
 		pygame.display.flip()
@@ -1310,6 +1308,7 @@ def currency_wdw(prev_screen, curr_screen):
 	# set window + clear screen
 	display_size = (800, 800)
 	display = pygame.display.set_mode(display_size, 0, 32)
+	display.blit(background, (0, 0))
 	pygame.display.set_caption('Currency')
 	manager = pygame_gui.UIManager(display_size, 'themes/button_themes.json')
 	manager_dd = pygame_gui.UIManager(display_size, 'themes/dropdown_menu_themes.json')
@@ -1420,7 +1419,6 @@ def currency_wdw(prev_screen, curr_screen):
 		# don't let previous end of input_rect show
 		display.fill(dark_orange)
 
-		display.blit(background, (0, 0))
 		manager.draw_ui(display)
 		manager_dd.draw_ui(display)
 		pygame.display.flip()
@@ -1434,6 +1432,7 @@ def cal_wdw(prev_screen, curr_screen):
 	# set window + clear screen
 	display_size = (800, 800)
 	display = pygame.display.set_mode(display_size, 0, 32)
+	display.blit(background, (0, 0))
 	pygame.display.set_caption('Calendar')
 	manager = pygame_gui.UIManager(display_size, 'themes/button_themes.json')
 	manager_dd = pygame_gui.UIManager(display_size, 'themes/dropdown_menu_themes.json')
@@ -1650,7 +1649,6 @@ def cal_wdw(prev_screen, curr_screen):
 		display.blit(text_surf_day_2, text_rect_day_2)
 		display.blit(text_surf_month_2, text_rect_month_2)
 		display.blit(text_surf_year_2, text_rect_year_2)
-		display.blit(background, (0, 0))
 
 		manager.draw_ui(display)
 		manager_dd.draw_ui(display)
